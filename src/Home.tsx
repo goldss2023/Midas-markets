@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { X, ArrowRight, ChevronDown, ChevronUp, Star, ArrowUp, Mail, MessageCircle, Shield, MoreVertical } from 'lucide-react';
 
-const API = 'http://localhost:3001/api';
+const API = '/api';
 
 // ─── Analytics helper ───
 function trackClick(target: string) {
