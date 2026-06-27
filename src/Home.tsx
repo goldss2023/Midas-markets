@@ -478,6 +478,21 @@ function Home() {
                   </li>
                 ))}
               </ul>
+              
+              <div className="mt-8 sm:mt-10 p-5 bg-[#0a0a0a] border border-white/10 rounded-2xl">
+                <h4 className="text-white font-bold text-sm sm:text-md mb-4 flex items-center gap-2">
+                  <Star className="w-4 h-4 text-[#d4af37] fill-[#d4af37]" /> Example VIP Analysis
+                </h4>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="rounded-lg overflow-hidden border border-white/5 bg-black">
+                    <img src="/proofs/photo_5904347879357222490_y.jpg" alt="VIP Analysis" className="w-full h-[150px] sm:h-[200px] object-cover opacity-80 hover:opacity-100 transition-opacity" />
+                  </div>
+                  <div className="rounded-lg overflow-hidden border border-white/5 bg-black">
+                    <img src="/proofs/photo_5904347879357222501_y.jpg" alt="VIP Telegram Alert" className="w-full h-[150px] sm:h-[200px] object-cover opacity-80 hover:opacity-100 transition-opacity" />
+                  </div>
+                </div>
+                <p className="text-white/40 text-[11px] sm:text-xs mt-3 italic text-center">This is the exact level of detail you will receive before every trade.</p>
+              </div>
             </div>
             <div className="w-full lg:w-1/2 flex flex-col gap-4 sm:gap-6">
               <div className="bg-[#0a0a0a] border border-white/10 rounded-2xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
