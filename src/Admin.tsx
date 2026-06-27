@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Star, ArrowLeft, Trash2, Users, MessageSquare, Mail, BarChart3, Image as ImageIcon, HelpCircle, Settings as SettingsIcon } from 'lucide-react';
+import { Star, ArrowLeft, Trash2, MessageSquare, Mail, BarChart3, Image as ImageIcon, HelpCircle, Settings as SettingsIcon } from 'lucide-react';
 
 const API = 'http://localhost:3001/api';
 

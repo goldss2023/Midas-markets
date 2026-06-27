@@ -388,16 +388,4 @@ app.use((err, req, res, _next) => {
   });
 });
 
-// ===========================================================================
-//  Start server
-// ===========================================================================
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught Exception:', err);
-});
-process.on('unhandledRejection', (err) => {
-  console.error('Unhandled Rejection:', err);
-});
-
-app.listen(PORT, () => {
-  console.log(`Backend server running on http://localhost:${PORT}`);
-});
+module.exports = app;
