@@ -19,7 +19,7 @@ function ProofCard({ filename, title, subtitle, badge, isRed, details }: any) {
   return (
     <div className="bg-black/40 border border-white/10 rounded-2xl p-4 flex flex-col gap-3 group hover:border-[#d4af37]/30 transition-all duration-300">
       <div className="w-full relative overflow-hidden rounded-xl bg-[#0A0A0A] flex items-center justify-center">
-        <img src={`/proofs/${filename}`} alt={title} className="w-full max-h-[400px] object-contain opacity-90 group-hover:opacity-100 transition-opacity" loading="lazy" />
+        <img src={filename?.startsWith('http') ? filename : `/proofs/${filename}`} alt={title} className="w-full max-h-[400px] object-contain opacity-90 group-hover:opacity-100 transition-opacity" loading="lazy" />
         {badge && (
           <div className={`absolute top-3 right-3 text-[11px] sm:text-[12px] font-bold px-2 py-1 rounded border backdrop-blur-md ${isRed ? 'bg-red-500/20 text-red-500 border-red-500/30' : 'bg-[#10B981]/20 text-[#10B981] border-[#10B981]/30'}`}>
             {badge}
