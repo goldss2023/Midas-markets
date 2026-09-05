@@ -162,6 +162,14 @@ function Home() {
     }
   }, [isMobile]);
 
+  const handleVideoTimeUpdate = () => {
+    if (videoRef.current && videoRef.current.currentTime >= 6.2) {
+      // Loop only the glowing logo section (t=2.83s onwards) so the explosion never repeats
+      videoRef.current.currentTime = 2.83;
+      videoRef.current.play().catch(() => {});
+    }
+  };
+
   useEffect(() => {
     // Fetch all dynamic data
     Promise.all([
@@ -288,9 +296,15 @@ function Home() {
           preload="auto"
           autoPlay 
           muted 
-          loop 
           playsInline 
-          className={`w-full h-full object-cover md:scale-115 mix-blend-screen pointer-events-none transition-opacity duration-500 ${isScrolled ? 'opacity-95' : 'opacity-100'} md:opacity-35`} 
+          onTimeUpdate={handleVideoTimeUpdate}
+          onEnded={() => {
+            if (videoRef.current) {
+              videoRef.current.currentTime = 2.83;
+              videoRef.current.play().catch(() => {});
+            }
+          }}
+          className={`w-full h-full object-cover md:scale-115 mix-blend-screen pointer-events-none transition-opacity duration-500 ${isScrolled ? 'opacity-50 md:opacity-30' : 'opacity-100 md:opacity-40'}`} 
         />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] bg-[#d4af37]/10 rounded-full blur-[150px] pointer-events-none"></div>
       </div>
