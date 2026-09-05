@@ -27,13 +27,39 @@
     <!-- Critical Asset Preloads for Instant Mobile Paint -->
     <link rel="preload" as="image" href="/bg-poster.webp" type="image/webp" fetchpriority="high" />
 
-    <!-- Google Fonts: Cinzel, Outfit, Inter, and Playfair Display -->
+    <!-- Google Fonts: Cinzel, Outfit, Inter, and Playfair Display (Non-blocking for Instant Paint) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap">
+    </noscript>
   </head>
-  <body>
-    <div id="root"></div>
+  <body style="background-color: #050505; color: #ffffff; margin: 0; padding: 0;">
+    <div id="root">
+      <!-- Instant First Paint (Replaced immediately by React on load) -->
+      <div style="min-height: 100vh; background-color: #050505; color: #ffffff; display: flex; flex-direction: column; align-items: flex-start; padding: 24px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; box-sizing: border-box;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 28px;">
+          <img src="/midas-logo.jpg" alt="Midas Markets" style="width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(212,175,55,0.4);" />
+          <span style="font-size: 20px; font-weight: 800; letter-spacing: 0.15em; color: #ffffff;">MIDAS <span style="color: #E8C361;">MARKETS</span></span>
+        </div>
+        <div style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(232,195,97,0.3); border-radius: 9999px; padding: 6px 14px; background: rgba(0,0,0,0.6); font-size: 12px; margin-bottom: 20px;">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
+          <span style="color: #ffffff; font-weight: 600;">Live signals &middot; 1,400+ traders inside</span>
+        </div>
+        <h1 style="font-size: clamp(38px, 9vw, 56px); font-weight: 900; line-height: 1.1; margin: 0 0 24px 0; color: #ffffff;">
+          Turn Market Liquidity <br />
+          Into <span style="color: #E8C361;">Pure Gold.</span>
+        </h1>
+        <p style="font-size: 16px; line-height: 1.6; color: #e4e4e7; max-width: 600px; margin: 0 0 28px 0;">
+          We trade 20 forex pairs including gold. Clean analysis. Elite risk-to-reward. 4 weeks straight without a stop loss.
+        </p>
+        <div style="background: linear-gradient(135deg, #FFF2BC, #E8C361, #AA8222); color: #000000; font-weight: 800; font-size: 15px; border-radius: 9999px; padding: 14px 28px; display: inline-block;">
+          Join Free on Telegram &rarr;
+        </div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
