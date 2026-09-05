@@ -140,10 +140,18 @@ function Home() {
   const [showBackToTop, setShowBackToTop] = useState(false);
   const [activeSection, setActiveSection] = useState("hero");
   const [navScrolled, setNavScrolled] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 768 : false);
 
   // Fallback data in case backend hasn't initialized yet
   const top4Proofs = proofsData.slice(0, 4);
   const remainingProofs = proofsData.slice(4);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   useEffect(() => {
     // Fetch all dynamic data
@@ -169,6 +177,7 @@ function Home() {
     const handleScroll = () => {
       setShowBackToTop(window.scrollY > 600);
       setNavScrolled(window.scrollY > 80);
+      setIsScrolled(window.scrollY > 40);
       const sectionIds = navSections.map(s => s.id);
       for (let i = sectionIds.length - 1; i >= 0; i--) {
         const el = document.getElementById(sectionIds[i]);
@@ -185,6 +194,10 @@ function Home() {
   const handleNavClick = (e: React.MouseEvent, targetId: string) => {
     e.preventDefault();
     setMenuOpen(false);
+    if (targetId === 'hero') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     if (targetId === 'proof-all' || targetId === 'proof-section') setShowAllProofs(true);
     setTimeout(() => {
       const element = document.getElementById(targetId === 'proof-all' ? 'proof-section' : targetId);
@@ -259,14 +272,20 @@ function Home() {
       
       {/* Background Video */}
       <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
-        <video 
-          src="/bg-video.mp4" 
-          autoPlay 
-          muted 
-          loop 
-          playsInline 
-          className="w-full h-full object-contain scale-110 md:scale-115 md:object-cover opacity-30 mix-blend-screen pointer-events-none" 
-        />
+        <div className="w-[96vw] max-w-[96vw] md:w-full md:max-w-none md:h-full flex items-center justify-center">
+          <video 
+            src="/bg-video.mp4" 
+            autoPlay 
+            muted 
+            loop 
+            playsInline 
+            className={`w-full aspect-video md:aspect-auto md:h-full object-contain md:object-cover md:scale-115 mix-blend-screen pointer-events-none transition-opacity duration-500 ${isScrolled ? 'opacity-95' : 'opacity-100'} md:opacity-35`} 
+            style={{
+              WebkitMaskImage: isMobile ? 'radial-gradient(ellipse 96% 90% at 50% 50%, #000 70%, transparent 100%)' : 'none',
+              maskImage: isMobile ? 'radial-gradient(ellipse 96% 90% at 50% 50%, #000 70%, transparent 100%)' : 'none'
+            }}
+          />
+        </div>
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] bg-[#d4af37]/10 rounded-full blur-[150px] pointer-events-none"></div>
       </div>
 
@@ -288,7 +307,7 @@ function Home() {
       )}
 
       {/* Sticky Mobile CTA */}
-      <div className="fixed bottom-0 left-0 w-full z-40 bg-[#050505]/95 backdrop-blur-md border-t border-white/10 p-4 md:hidden animate-fade-up">
+      <div className={`fixed bottom-0 left-0 w-full z-40 bg-[#050505]/95 backdrop-blur-md border-t border-white/10 p-4 md:hidden transition-all duration-300 ${isScrolled ? 'translate-y-0 opacity-100' : 'translate-y-full opacity-0 pointer-events-none'}`}>
          <button onClick={() => handleTrackedLink('telegram_mobile_sticky', telegramLink)} className="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-[#f9e7b9] to-[#d4af37] text-black text-[15px] font-bold rounded-full py-3.5 shadow-[0_0_20px_rgba(212,175,55,0.3)] btn-sheen">
             Join Telegram Free <ArrowRight className="w-4 h-4" />
          </button>
@@ -360,6 +379,14 @@ function Home() {
       {/* ─── MAIN CONTENT ─── */}
       <main className={`relative z-10 flex flex-col items-center min-h-screen px-4 sm:px-6 md:px-12 ${settings.scarcity_banner_active === 'true' ? 'pt-[140px] sm:pt-[160px]' : 'pt-[100px] sm:pt-[120px]'} pb-0 max-w-[1400px] mx-auto`}>
         
+        {/* Mobile Initial Viewport Spacer: On initial load, only the background logo animation & top navbar are visible */}
+        <div className="md:hidden w-full min-h-[calc(100dvh-130px)] flex flex-col items-center justify-end pb-8 pointer-events-none select-none">
+          <div className="flex flex-col items-center gap-2 text-white/50 animate-bounce">
+            <span className="text-[11px] uppercase tracking-[0.25em] font-inter font-medium text-[#f9e7b9]/80">Scroll to explore</span>
+            <ChevronDown className="w-4 h-4 text-[#d4af37]" />
+          </div>
+        </div>
+
         {/* ═══ HERO ═══ */}
         <div id="hero" className="w-full flex flex-col items-start max-w-[940px] scroll-mt-32">
           <div className="flex items-center gap-2 border border-[#4A3E1E] rounded-full px-3 py-1 bg-black/40 text-[11px] sm:text-[13px] text-white/90 mb-4 sm:mb-6 font-medium">
