@@ -49,6 +49,10 @@ html {
     font-family: "Inter", sans-serif;
   }
 
+  .font-playfair {
+    font-family: "Playfair Display", serif;
+  }
+
   .animate-fade-up {
     animation: fade-up 0.8s ease-out forwards;
   }

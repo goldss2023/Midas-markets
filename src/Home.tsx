@@ -414,14 +414,13 @@ function Home() {
             Live signals &middot; 1,400+ traders inside
           </div>
 
-          <h1 className="flex flex-wrap gap-x-2 sm:gap-x-3 gap-y-0 sm:gap-y-1 font-playfair font-black uppercase text-white leading-[1.05] sm:leading-[1.02] tracking-[-0.025em]" style={{ fontSize: 'clamp(38px, 9vw, 92px)' }}>
-            <span>TURN</span><span>MARKET</span><span>LIQUIDITY</span><span>INTO</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#f9e7b9] via-[#d4af37] to-[#8c6b12]">PURE</span>
-            <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#f9e7b9] via-[#d4af37] to-[#8c6b12]">GOLD.</span>
+          <h1 className="font-playfair font-normal text-white leading-[1.14] sm:leading-[1.08] tracking-[-0.01em]" style={{ fontSize: 'clamp(42px, 8.5vw, 92px)' }}>
+            Turn Market Liquidity <br className="hidden sm:inline" />
+            Into <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#f9e7b9] via-[#d4af37] to-[#8c6b12]">Pure Gold.</span>
           </h1>
 
-          <p className="mt-5 sm:mt-8 text-[16px] sm:text-[20px] leading-[1.55] text-white/90 max-w-[720px] font-inter font-medium">
-            We trade 20 forex pairs including gold. Clean analysis. Elite risk-to-reward. <span className="text-[#f9e7b9] font-bold">4 weeks straight without a stop loss.</span>
+          <p className="mt-16 sm:mt-24 md:mt-28 text-[16px] sm:text-[20px] leading-[1.65] text-white/85 max-w-[720px] font-inter font-normal">
+            We trade 20 forex pairs including gold. Clean analysis. Elite risk-to-reward. <span className="text-[#f9e7b9] font-semibold">4 weeks straight without a stop loss.</span>
           </p>
 
           <p className="mt-4 sm:mt-6 text-[14px] sm:text-[16px] leading-[1.75] text-white/70 max-w-[680px] font-inter">
