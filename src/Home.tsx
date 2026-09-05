@@ -258,8 +258,15 @@ function Home() {
     <div className="relative w-full min-h-screen overflow-x-hidden bg-[#050505] text-white selection:bg-[#d4af37]/30 pb-20 md:pb-0">
       
       {/* Background Video */}
-      <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none">
-        <video src="/bg-video.mp4" autoPlay muted loop playsInline className="w-full h-full max-w-[1200px] max-h-[800px] object-contain opacity-30 mix-blend-screen scale-90" />
+      <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
+        <video 
+          src="/bg-video.mp4" 
+          autoPlay 
+          muted 
+          loop 
+          playsInline 
+          className="w-full h-full object-contain scale-110 md:scale-115 md:object-cover opacity-30 mix-blend-screen pointer-events-none" 
+        />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] bg-[#d4af37]/10 rounded-full blur-[150px] pointer-events-none"></div>
       </div>
 
