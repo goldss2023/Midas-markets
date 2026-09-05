@@ -402,11 +402,16 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    if (videoRef.current) {
-      videoRef.current.defaultMuted = true;
-      videoRef.current.muted = true;
-      videoRef.current.play().catch(() => {});
-    }
+    const playVideo = () => {
+      if (videoRef.current) {
+        videoRef.current.defaultMuted = true;
+        videoRef.current.muted = true;
+        videoRef.current.play().catch(() => {});
+      }
+    };
+    playVideo();
+    window.addEventListener('touchstart', playVideo, { once: true, passive: true });
+    return () => window.removeEventListener('touchstart', playVideo);
   }, [isMobile]);
 
   const handleVideoTimeUpdate = () => {
@@ -598,9 +603,9 @@ function Home() {
               videoRef.current.play().catch(() => {});
             }
           }}
-          className={`w-full h-full object-cover md:scale-115 mix-blend-screen pointer-events-none transition-opacity duration-700 ease-in-out ${isScrolled ? 'opacity-15 md:opacity-10' : 'opacity-100 md:opacity-35'}`} 
+          className={`w-full h-full object-cover md:scale-110 mix-blend-screen pointer-events-none transition-opacity duration-500 ease-out ${isScrolled ? 'opacity-20 md:opacity-15' : 'opacity-35 md:opacity-25'}`} 
         />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] bg-[#d4af37]/10 rounded-full blur-[160px] pointer-events-none"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] bg-[#d4af37]/15 rounded-full blur-[140px] pointer-events-none"></div>
       </div>
 
       {/* Floating Section Navigation (Desktop only) */}
@@ -1328,15 +1333,7 @@ function Home() {
       )}
 
       {/* ─── MAIN CONTENT ─── */}
-      <main className={`relative z-10 flex flex-col items-center min-h-screen px-4 sm:px-6 md:px-12 ${settings.scarcity_banner_active === 'true' ? 'pt-[140px] sm:pt-[160px]' : 'pt-[100px] sm:pt-[120px]'} pb-0 max-w-[1400px] mx-auto`}>
-        
-        {/* Mobile Initial Viewport Spacer: Initial load shows only the logo video animation & top navigation */}
-        <div className="md:hidden w-full min-h-[calc(100dvh-130px)] flex flex-col items-center justify-end pb-8 pointer-events-none select-none">
-          <div className="flex flex-col items-center gap-2 text-white/70 animate-bounce">
-            <span className="text-[11px] uppercase tracking-[0.25em] font-inter font-bold text-[#f9e7b9]">Scroll to explore</span>
-            <ChevronDown className="w-4 h-4 text-[#d4af37]" />
-          </div>
-        </div>
+      <main className={`relative z-10 flex flex-col items-center min-h-screen px-4 sm:px-6 md:px-12 ${settings.scarcity_banner_active === 'true' ? 'pt-[130px] sm:pt-[150px]' : 'pt-[85px] sm:pt-[110px]'} pb-0 max-w-[1400px] mx-auto`}>
 
         {/* ═══ HERO ═══ */}
         <div id="hero" className="w-full flex flex-col items-start max-w-[940px] scroll-mt-32">

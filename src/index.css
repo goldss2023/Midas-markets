@@ -1,8 +1,6 @@
-@import url('https://db.onlinewebfonts.com/c/8b75d9dcff6a48c35a46656192adf019?family=FSP+DEMO+-+PODIUM+Sharp+4.11');
 @import "tailwindcss";
 
 @theme {
-  --font-podium: "FSP DEMO - PODIUM Sharp 4.11", sans-serif;
   --font-inter: "Inter", sans-serif;
   --font-playfair: "Playfair Display", serif;
   --font-cinzel: "Cinzel", serif;
@@ -43,10 +41,7 @@ html {
     50% { filter: drop-shadow(0 0 16px rgba(212,175,55,1)); }
   }
 
-  .font-podium {
-    font-family: "FSP DEMO - PODIUM Sharp 4.11", sans-serif;
-  }
-  
+
   .font-inter {
     font-family: "Inter", sans-serif;
   }
