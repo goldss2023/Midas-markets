@@ -142,6 +142,7 @@ function Home() {
   const [navScrolled, setNavScrolled] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   // Fallback data in case backend hasn't initialized yet
   const top4Proofs = proofsData.slice(0, 4);
@@ -152,6 +153,14 @@ function Home() {
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.defaultMuted = true;
+      videoRef.current.muted = true;
+      videoRef.current.play().catch(() => {});
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     // Fetch all dynamic data
@@ -274,7 +283,10 @@ function Home() {
       <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
         <div className="w-[96vw] max-w-[96vw] md:w-full md:max-w-none md:h-full flex items-center justify-center">
           <video 
-            src="/bg-video.mp4" 
+            ref={videoRef}
+            src={isMobile ? "/bg-video-mobile.mp4" : "/bg-video.mp4"}
+            poster="/bg-poster.webp"
+            preload="auto"
             autoPlay 
             muted 
             loop 
