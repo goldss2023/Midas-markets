@@ -281,23 +281,17 @@ function Home() {
       
       {/* Background Video */}
       <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
-        <div className="w-[96vw] max-w-[96vw] md:w-full md:max-w-none md:h-full flex items-center justify-center">
-          <video 
-            ref={videoRef}
-            src={isMobile ? "/bg-video-mobile.mp4" : "/bg-video.mp4"}
-            poster="/bg-poster.webp"
-            preload="auto"
-            autoPlay 
-            muted 
-            loop 
-            playsInline 
-            className={`w-full aspect-video md:aspect-auto md:h-full object-contain md:object-cover md:scale-115 mix-blend-screen pointer-events-none transition-opacity duration-500 ${isScrolled ? 'opacity-95' : 'opacity-100'} md:opacity-35`} 
-            style={{
-              WebkitMaskImage: isMobile ? 'radial-gradient(ellipse 96% 90% at 50% 50%, #000 70%, transparent 100%)' : 'none',
-              maskImage: isMobile ? 'radial-gradient(ellipse 96% 90% at 50% 50%, #000 70%, transparent 100%)' : 'none'
-            }}
-          />
-        </div>
+        <video 
+          ref={videoRef}
+          src={isMobile ? "/bg-video-mobile.mp4" : "/bg-video.mp4"}
+          poster="/bg-poster.webp"
+          preload="auto"
+          autoPlay 
+          muted 
+          loop 
+          playsInline 
+          className={`w-full h-full object-cover md:scale-115 mix-blend-screen pointer-events-none transition-opacity duration-500 ${isScrolled ? 'opacity-95' : 'opacity-100'} md:opacity-35`} 
+        />
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] bg-[#d4af37]/10 rounded-full blur-[150px] pointer-events-none"></div>
       </div>
 
