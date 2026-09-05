@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { 
   X, ArrowRight, ChevronDown, ChevronUp, Star, ArrowUp, Mail, 
   MessageCircle, Shield, MoreVertical, Check, ExternalLink, 
-  Crown, Share2
+  Crown, Share2, Maximize2
 } from 'lucide-react';
 import { reviewsData as staticReviewsData } from './reviewsData';
 
@@ -23,71 +23,87 @@ function trackClick(target: string) {
   }).catch(() => {});
 }
 
-// ─── Default Verified Proofs (Ensures proofs always display reliably) ───
+// ─── Default Verified Proofs (10 Setups requested by user) ───
 const DEFAULT_PROOFS = [
   {
-    filename: "proof1.png",
-    title: "XAUUSD (Gold) Precision Buy",
-    subtitle: "150 Pips secured cleanly during NY session open.",
-    badge: "+£8,240",
+    filename: "photo_5942833990374985878_y.jpg",
+    title: "Live MT5 Gold Short Execution",
+    subtitle: "Stacked intraday sell positions capturing the 127-pip drop.",
+    badge: "+£228,624.29",
     isRed: false,
-    details: "Price swept Asian session liquidity and tapped directly into a 15m order block. We executed on the shift in market structure with zero float and rode it into the 4H supply zone."
+    details: "High-conviction institutional sell setup on XAUUSD. Price swept liquidity at 4156.31, confirmed structural shift on lower timeframe, and distributed cleanly with 1:4.8 RR."
   },
   {
-    filename: "proof2.png",
-    title: "GBPUSD Institutional Sell",
-    subtitle: "Flawless Wyckoff distribution schematic continuation.",
-    badge: "+£4,100",
+    filename: "photo_5940582190561300192_y.jpg",
+    title: "XAUUSD Supply Rejection Sell",
+    subtitle: "Precision entries straight off 4H institutional ceiling.",
+    badge: "+£50,439.27",
     isRed: false,
-    details: "Identified a textbook Wyckoff distribution pattern on the 1H timeframe. Entered precisely after the UTAD confirmation. Clean drop straight into the daily liquidity imbalance."
+    details: "Price wicked the key liquidity ceiling and reversed sharply with zero drawdown. All 9 partial positions delivered clean target profit."
   },
   {
-    filename: "proof3.png",
-    title: "EURUSD Liquidity Sweep Buy",
-    subtitle: "Sniper entry executed on the 5m chart with zero drawdown.",
-    badge: "+£6,500",
+    filename: "photo_5906974350642974415_y.jpg",
+    title: "London Session Gold Breakout",
+    subtitle: "Asian session sweep followed by aggressive bullish impulse.",
+    badge: "+£48,839.68",
     isRed: false,
-    details: "Euro had clear macro fundamental backing. We waited patiently for the retracement into the 50% equilibrium level aligning with a fair value gap. Clean 1:4.2 risk-to-reward."
+    details: "Asian session lows were liquidated before the London open. A textbook bullish order block formed on the 5m timeframe, pushing directly into our primary target."
   },
   {
-    filename: "proof4.png",
-    title: "XAUUSD Counter-Trend Scalp",
-    subtitle: "Fast NY rejection taking 50 pips in under 12 minutes.",
-    badge: "+£3,200",
+    filename: "photo_5897478787836874156_y.jpg",
+    title: "XAUUSD Swing Sell Continuation",
+    subtitle: "Overnight swing positions locked with trailing stops.",
+    badge: "+£31,254.96",
     isRed: false,
-    details: "Gold was heavily overextended into a daily resistance ceiling. We caught the sharp 50-pip pullback with tight 8-pip risk before the broader trend resumed."
+    details: "Macro structural break on Gold. Trailed stop loss secured over +£31,200 in clean banked profit across the London/NY overlap."
   },
   {
-    filename: "proof5.png",
-    title: "USDJPY Daily Break & Retest",
-    subtitle: "High timeframe structural break with massive RR.",
-    badge: "+£9,800",
+    filename: "photo_5933755099526141353_y.jpg",
+    title: "Intraday Momentum Scalp",
+    subtitle: "Clean 5-minute continuation off fair value gap.",
+    badge: "+£5,731.75",
     isRed: false,
-    details: "Classic institutional break and retest. Price broke through a major daily level, retraced perfectly to test it as support, and we rode the continuation for massive RR."
+    details: "Low-drawdown scalp executed during high-volume New York hours, locking in +£5,731 with disciplined execution."
   },
   {
-    filename: "photo_5904347879357222486_y.jpg",
-    title: "Live Telegram Execution Proof",
-    subtitle: "Verified trade call shared live inside the community.",
-    badge: "+112 Pips",
+    filename: "photo_5942833990374985752_y.jpg",
+    title: "Gold M30 Sniper Entry Chart",
+    subtitle: "Textbook order block bounce with zero drawdown.",
+    badge: "M30 Setup",
     isRed: false,
-    details: "Entry timestamp, stop loss, and multiple take profit targets provided in real time before the session opened."
+    details: "Live MT5 chart trigger on the 30-minute timeframe showing exact candle rejection, entry price, and stop loss placement."
   },
   {
-    filename: "photo_5904347879357222487_y.jpg",
-    title: "US30 Index Momentum Push",
-    subtitle: "NY open volume surge hitting TP3 flawlessly.",
-    badge: "+£5,420",
+    filename: "photo_5938330390747615075_y.jpg",
+    title: "Gold M5 Precision Rejection",
+    subtitle: "M5 wick rejection off 15m supply zone.",
+    badge: "M5 Execution",
     isRed: false,
-    details: "Indices swept pre-market highs, formed a clear change of character, and delivered a high-momentum selloff."
+    details: "Sniper entry with tight 6-pip invalidation above the high, yielding a clean 1:4.2 risk-to-reward ratio."
   },
   {
-    filename: "photo_5904347879357222490_y.jpg",
-    title: "Full Pre-Trade Analysis Breakdown",
-    subtitle: "Complete institutional chart markup sent to VIP members.",
-    badge: "VIP Setup",
+    filename: "photo_5915760148628574066_w.jpg",
+    title: "GBPUSD Institutional Break & Retest",
+    subtitle: "30-minute chart markup hitting target high flawlessly.",
+    badge: "GBPUSD TP",
     isRed: false,
-    details: "Full chart markup highlighting the order block, liquidity pools, and invalidation levels before candles formed."
+    details: "Textbook break of structure on Cable, retest into fair value gap, and aggressive continuation straight through buy-side liquidity."
+  },
+  {
+    filename: "photo_5915784552632749599_w.jpg",
+    title: "US 100 (Nasdaq) Liquidity Sweep",
+    subtitle: "Session low swept before full bullish reversal.",
+    badge: "US100 +140 Pips",
+    isRed: false,
+    details: "Institutional sweep of early morning lows before an explosive rally upwards to take out pre-market swing highs."
+  },
+  {
+    filename: "IMG_3239.MP4",
+    title: "Live MT5 Video Screen Recording",
+    subtitle: "Watch live trade positions running in real-time.",
+    badge: "Live Video",
+    isRed: false,
+    details: "Direct video capture of live MT5 chart running multiple lots in solid profit with trailing stops."
   }
 ];
 
@@ -110,33 +126,48 @@ const DEFAULT_FAQS = [
     answer: "The Free Telegram gives you select live trade calls and market updates. VIP gives you all 20 pair setups, full pre-trade chart markups, earlier entry alerts, direct 1-on-1 mentorship access, and daily live analysis."
   },
   {
-    question: "How does the Account Management service work?",
-    answer: "For traders who cannot watch charts all day, we execute trades directly on your personal broker or prop firm funded account. We handle all risk and execution, and split the net profits fairly at the end of each cycle."
-  },
-  {
     question: "Can I use any broker or prop firm?",
     answer: "Yes. Our signals and setups work across all major brokers (MetaTrader 4, MetaTrader 5, cTrader, TradingView) and all major prop firms (FTMO, FundedNext, The Funded Trader, etc.)."
   }
 ];
 
 // ─── Proof Card ───
-function ProofCard({ filename, title, subtitle, badge, isRed, details }: any) {
+function ProofCard({ filename, title, subtitle, badge, isRed, details, onOpenLightbox }: any) {
   const [expanded, setExpanded] = useState(false);
-  const imgSrc = filename?.startsWith('http') ? filename : `/proofs/${filename}`;
+  const isVideo = filename?.toLowerCase().endsWith('.mp4');
+  const mediaSrc = filename?.startsWith('http') ? filename : `/proofs/${filename}`;
 
   return (
     <div className="bg-[#0c0c0c]/95 border border-white/15 rounded-2xl sm:rounded-3xl p-5 sm:p-6 flex flex-col gap-4 group hover:border-[#d4af37]/50 shadow-2xl transition-all duration-300 backdrop-blur-md">
-      <div className="w-full relative overflow-hidden rounded-xl bg-black border border-white/10 flex items-center justify-center min-h-[220px] max-h-[360px] p-2">
-        <img 
-          src={imgSrc} 
-          alt={title} 
-          onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/midas-logo.jpg'; }}
-          className="w-full h-full max-h-[340px] object-contain opacity-95 group-hover:opacity-100 group-hover:scale-[1.02] transition-all duration-300" 
-          loading="lazy" 
-        />
+      <div 
+        onClick={() => onOpenLightbox && onOpenLightbox({ src: mediaSrc, isVideo, title })}
+        className="w-full relative overflow-hidden rounded-xl bg-black border border-white/10 flex items-center justify-center min-h-[220px] sm:min-h-[260px] max-h-[380px] p-2 cursor-pointer group/img"
+      >
+        {isVideo ? (
+          <video 
+            src={mediaSrc} 
+            controls 
+            playsInline 
+            poster="/proofs/video_frame_thumb.jpg"
+            className="w-full h-full max-h-[340px] object-contain rounded-lg" 
+          />
+        ) : (
+          <img 
+            src={mediaSrc} 
+            alt={title} 
+            onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/midas-logo.jpg'; }}
+            className="w-full h-full max-h-[340px] object-contain opacity-95 group-hover/img:opacity-100 group-hover/img:scale-[1.02] transition-all duration-300" 
+            loading="lazy" 
+          />
+        )}
         {badge && (
           <div className={`absolute top-3 right-3 text-[12px] font-bold px-3 py-1 rounded-full border backdrop-blur-md shadow-md ${isRed ? 'bg-red-500/25 text-red-400 border-red-500/40' : 'bg-[#10B981]/25 text-[#10B981] border-[#10B981]/40'}`}>
             {badge}
+          </div>
+        )}
+        {!isVideo && (
+          <div className="absolute bottom-3 right-3 bg-black/75 hover:bg-black text-white/90 px-2.5 py-1 rounded-lg border border-white/20 text-[11px] font-semibold flex items-center gap-1 opacity-0 group-hover/img:opacity-100 transition-opacity">
+            <Maximize2 className="w-3 h-3 text-[#d4af37]" /> Zoom
           </div>
         )}
       </div>
@@ -194,12 +225,16 @@ function FloatingNav({
   sections, 
   activeSection,
   onOpenVip,
-  onOpenSocials
+  onOpenSocials,
+  onOpenReview,
+  onOpenCommunity
 }: { 
   sections: { id: string; label: string }[]; 
   activeSection: string;
   onOpenVip: () => void;
   onOpenSocials: () => void;
+  onOpenReview: () => void;
+  onOpenCommunity: () => void;
 }) {
   const [open, setOpen] = useState(false);
   
@@ -243,6 +278,30 @@ function FloatingNav({
           <div className="w-3 h-3 rounded-full border-2 border-white/50" />
         </button>
 
+        {/* Add Review Action Button in Menu */}
+        <button 
+          onClick={() => { setOpen(false); onOpenReview(); }} 
+          className="group flex items-center gap-2.5 justify-end"
+          title="Add a Review"
+        >
+          <span className="text-[11px] font-inter font-bold text-white bg-black/90 border border-white/20 px-2.5 py-1 rounded-md shadow-md flex items-center gap-1 hover:text-[#d4af37]">
+            <Star className="w-3 h-3 text-[#d4af37] fill-[#d4af37]" /> Add Review
+          </span>
+          <div className="w-3 h-3 rounded-full border-2 border-white/50" />
+        </button>
+
+        {/* Stay Ahead & Suggestions Action Button in Menu */}
+        <button 
+          onClick={() => { setOpen(false); onOpenCommunity(); }} 
+          className="group flex items-center gap-2.5 justify-end"
+          title="Stay Ahead & Suggestions"
+        >
+          <span className="text-[11px] font-inter font-bold text-white bg-black/90 border border-white/20 px-2.5 py-1 rounded-md shadow-md flex items-center gap-1 hover:text-[#d4af37]">
+            <Mail className="w-3 h-3 text-[#d4af37]" /> Stay Ahead & Suggestions
+          </span>
+          <div className="w-3 h-3 rounded-full border-2 border-white/50" />
+        </button>
+
         <div className="w-full h-[1px] bg-white/10 my-1" />
 
         {sections.map((s) => (
@@ -260,12 +319,10 @@ function FloatingNav({
 
 const navSections = [
   { id: "hero", label: "Home" },
-  { id: "proof-section", label: "Proof" },
+  { id: "proof-section", label: "Results" },
   { id: "why-free", label: "Why Free?" },
-  { id: "account-mgmt", label: "Acc. Mgmt" },
   { id: "reviews", label: "Reviews" },
   { id: "faq", label: "FAQ" },
-  { id: "waitlist", label: "Waitlist" },
 ];
 
 type ReviewTab = 'ALL' | 'POSITIVE' | 'NEGATIVE';
@@ -275,6 +332,9 @@ function Home() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [vipModalOpen, setVipModalOpen] = useState(false);
   const [socialModalOpen, setSocialModalOpen] = useState(false);
+  const [communityModalOpen, setCommunityModalOpen] = useState(false);
+  const [communityTab, setCommunityTab] = useState<'WAITLIST' | 'SUGGESTION'>('WAITLIST');
+  const [lightboxMedia, setLightboxMedia] = useState<{ src: string; isVideo?: boolean; title?: string } | null>(null);
   const [showAllProofs, setShowAllProofs] = useState(false);
   
   // Dynamic Data States initialized with reliable fallbacks
@@ -294,14 +354,6 @@ function Home() {
   const [waitlistName, setWaitlistName] = useState("");
   const [waitlistStatus, setWaitlistStatus] = useState("");
 
-  // Collapsible Inquiry States
-  const [mgmtInquiryOpen, setMgmtInquiryOpen] = useState(false);
-  const [mgmtName, setMgmtName] = useState("");
-  const [mgmtContact, setMgmtContact] = useState("");
-  const [mgmtSize, setMgmtSize] = useState("$25,000 - $50,000");
-  const [mgmtType, setMgmtType] = useState("Personal Broker Account");
-  const [mgmtNotes, setMgmtNotes] = useState("");
-  const [mgmtStatus, setMgmtStatus] = useState("");
 
   const [vipInquiryOpen, setVipInquiryOpen] = useState(false);
   const [vipInquiryName, setVipInquiryName] = useState("");
@@ -318,7 +370,7 @@ function Home() {
 
   // Fallback data in case backend hasn't initialized yet
   const activeProofs = proofsData && proofsData.length > 0 ? proofsData : DEFAULT_PROOFS;
-  const top4Proofs = activeProofs.slice(0, 4);
+  const top3Proofs = activeProofs.slice(0, 3);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -395,6 +447,16 @@ function Home() {
       setSocialModalOpen(true);
       return;
     }
+    if (targetId === 'reviews-write') {
+      setShowReviewForm(true);
+      return;
+    }
+    if (targetId === 'community' || targetId === 'waitlist' || targetId === 'suggestions') {
+      setCommunityModalOpen(true);
+      if (targetId === 'suggestions') setCommunityTab('SUGGESTION');
+      else setCommunityTab('WAITLIST');
+      return;
+    }
     if (targetId === 'proof-all' || targetId === 'proof-section') setShowAllProofs(true);
     setTimeout(() => {
       const element = document.getElementById(targetId === 'proof-all' ? 'proof-section' : targetId);
@@ -407,8 +469,8 @@ function Home() {
   };
 
   const navLinks = [
-    { name: "Proof", href: "#proof-section", id: "proof-section" },
-    { name: "Account Mgmt", href: "#account-mgmt", id: "account-mgmt" },
+    { name: "Results", href: "#proof-section", id: "proof-section" },
+    { name: "Why Free?", href: "#why-free", id: "why-free" },
     { name: "Reviews", href: "#reviews", id: "reviews" },
     { name: "FAQ", href: "#faq", id: "faq" },
     { name: "Socials", href: "#socials", id: "socials" },
@@ -463,25 +525,6 @@ function Home() {
     } catch { setWaitlistStatus("Network error. Try again."); }
   };
 
-  const submitMgmtInquiry = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setMgmtStatus("Submitting application...");
-    try {
-      const summaryText = `[Account Mgmt Inquiry]\nName: ${mgmtName}\nContact: ${mgmtContact}\nAccount Size: ${mgmtSize}\nAccount Type: ${mgmtType}\nNotes: ${mgmtNotes}`;
-      await fetch(`${API}/suggestions`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: `[MGMT] ${mgmtName}`, text: summaryText })
-      });
-      setMgmtStatus("Application received! We will reach out promptly.");
-      setTimeout(() => {
-        setMgmtStatus("");
-        setMgmtInquiryOpen(false);
-      }, 3500);
-    } catch {
-      setMgmtStatus("Failed to submit. Please contact us directly on Telegram.");
-    }
-  };
 
   const submitVipInquiry = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -541,6 +584,8 @@ function Home() {
           activeSection={activeSection}
           onOpenVip={() => setVipModalOpen(true)}
           onOpenSocials={() => setSocialModalOpen(true)}
+          onOpenReview={() => setShowReviewForm(true)}
+          onOpenCommunity={() => setCommunityModalOpen(true)}
         />
       </div>
 
@@ -667,11 +712,45 @@ function Home() {
             <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-white" />
           </button>
 
+          {/* Add Review Button */}
+          <button
+            onClick={() => { setMenuOpen(false); setShowReviewForm(true); }}
+            className="w-full text-left bg-black/60 border border-white/15 rounded-2xl p-4 flex items-center justify-between group hover:border-[#d4af37]/50 transition-all shadow-md"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-[#d4af37]">
+                <Star className="w-5 h-5 fill-[#d4af37]" />
+              </div>
+              <div>
+                <div className="font-playfair font-black text-xl text-white group-hover:text-[#d4af37] transition-colors">Add a Review</div>
+                <div className="text-[12px] text-zinc-300 font-inter font-medium">Share your experience with Midas</div>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-white" />
+          </button>
+
+          {/* Stay Ahead & Suggestions Button */}
+          <button
+            onClick={() => { setMenuOpen(false); setCommunityModalOpen(true); }}
+            className="w-full text-left bg-black/60 border border-white/15 rounded-2xl p-4 flex items-center justify-between group hover:border-[#d4af37]/50 transition-all shadow-md"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-[#d4af37]">
+                <Mail className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="font-playfair font-black text-xl text-white group-hover:text-[#d4af37] transition-colors">Stay Ahead &amp; Suggestions</div>
+                <div className="text-[12px] text-zinc-300 font-inter font-medium">Priority waitlist &amp; trader feedback</div>
+              </div>
+            </div>
+            <ArrowRight className="w-4 h-4 text-zinc-400 group-hover:text-white" />
+          </button>
+
           {/* Standard Navigation Links */}
           <div className="flex flex-col space-y-3 pt-2">
             {[
-              { name: "Verified Proof", id: "proof-section" },
-              { name: "Account Management", id: "account-mgmt" },
+              { name: "Latest Results", id: "proof-section" },
+              { name: "Why Free?", id: "why-free" },
               { name: "Member Reviews", id: "reviews" },
               { name: "FAQ", id: "faq" },
             ].map((link) => (
@@ -996,6 +1075,172 @@ function Home() {
         </div>
       )}
 
+      {/* ─── COMMUNITY HUB MODAL: STAY AHEAD & SUGGESTIONS (Accessed via Three Dots) ─── */}
+      {communityModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in" onClick={(e) => { if (e.target === e.currentTarget) setCommunityModalOpen(false); }}>
+          <div className="bg-[#0c0c0c] border border-[#d4af37]/40 rounded-3xl p-6 sm:p-10 max-w-xl w-full relative shadow-2xl">
+            <button 
+              onClick={() => setCommunityModalOpen(false)} 
+              className="absolute top-5 right-5 text-zinc-400 hover:text-white bg-white/5 p-2 rounded-full border border-white/10"
+              aria-label="Close community modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {/* Tab switch */}
+            <div className="flex gap-2 p-1.5 bg-black/80 border border-white/15 rounded-2xl mb-6">
+              <button 
+                onClick={() => setCommunityTab('WAITLIST')} 
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold font-inter transition-all flex items-center justify-center gap-1.5 ${communityTab === 'WAITLIST' ? 'bg-[#d4af37] text-black shadow-md' : 'text-zinc-300 hover:text-white'}`}
+              >
+                <Mail className="w-3.5 h-3.5" /> Stay Ahead
+              </button>
+              <button 
+                onClick={() => setCommunityTab('SUGGESTION')} 
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-bold font-inter transition-all flex items-center justify-center gap-1.5 ${communityTab === 'SUGGESTION' ? 'bg-[#d4af37] text-black shadow-md' : 'text-zinc-300 hover:text-white'}`}
+              >
+                <MessageCircle className="w-3.5 h-3.5" /> Send Suggestion
+              </button>
+            </div>
+
+            {communityTab === 'WAITLIST' ? (
+              <div className="flex flex-col animate-fade-in">
+                <div className="flex items-center gap-2 text-[#d4af37] text-xs uppercase font-bold tracking-widest mb-2">
+                  <Mail className="w-4 h-4" /> Priority Early Access
+                </div>
+                <h3 className="font-playfair text-[26px] sm:text-[32px] font-black text-white leading-tight mb-2">
+                  Stay Ahead of the Market
+                </h3>
+                <p className="text-zinc-200 font-inter font-medium text-[13px] sm:text-[14px] leading-relaxed mb-6">
+                  Join the priority waitlist and be the first to know when we drop exclusive trading content, advanced strategy breakdowns, and limited VIP intake slots. No spam &mdash; only signal.
+                </p>
+
+                <form onSubmit={submitWaitlist} className="flex flex-col gap-3.5">
+                  <div>
+                    <label className="block text-zinc-300 text-xs font-semibold mb-1">Your Name</label>
+                    <input 
+                      type="text" 
+                      value={waitlistName} 
+                      onChange={(e) => setWaitlistName(e.target.value)} 
+                      placeholder="e.g. Alex" 
+                      className="w-full bg-black border border-white/20 rounded-xl p-3.5 text-white font-inter text-sm font-medium placeholder:text-zinc-500" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-zinc-300 text-xs font-semibold mb-1">Your Email Address</label>
+                    <input 
+                      required 
+                      type="email" 
+                      value={waitlistEmail} 
+                      onChange={(e) => setWaitlistEmail(e.target.value)} 
+                      placeholder="alex@example.com" 
+                      className="w-full bg-black border border-white/20 rounded-xl p-3.5 text-white font-inter text-sm font-medium placeholder:text-zinc-500" 
+                    />
+                  </div>
+                  <button 
+                    type="submit" 
+                    className="w-full mt-2 bg-gradient-to-r from-[#f9e7b9] to-[#d4af37] text-black font-bold text-sm py-4 rounded-xl hover:opacity-95 transition-opacity shadow-[0_0_20px_rgba(212,175,55,0.25)] btn-sheen"
+                  >
+                    Join Priority Waitlist &rarr;
+                  </button>
+                  {waitlistStatus && (
+                    <p className={`mt-2 text-center text-xs sm:text-sm font-bold font-inter ${waitlistStatus.includes('error') || waitlistStatus.includes('already') ? 'text-red-400' : 'text-[#10b981]'}`}>
+                      {waitlistStatus}
+                    </p>
+                  )}
+                </form>
+              </div>
+            ) : (
+              <div className="flex flex-col animate-fade-in">
+                <div className="flex items-center gap-2 text-[#d4af37] text-xs uppercase font-bold tracking-widest mb-2">
+                  <MessageCircle className="w-4 h-4" /> Trader Feedback
+                </div>
+                <h3 className="font-playfair text-[26px] sm:text-[32px] font-black text-white leading-tight mb-2">
+                  Make Midas Better
+                </h3>
+                <p className="text-zinc-200 font-inter font-medium text-[13px] sm:text-[14px] leading-relaxed mb-6">
+                  Have an idea, specific pair request, or feature that would make this operation even better? Tell us. Every single submission is reviewed personally by our lead traders.
+                </p>
+
+                <form onSubmit={submitSuggestion} className="flex flex-col gap-3.5">
+                  <div>
+                    <label className="block text-zinc-300 text-xs font-semibold mb-1">Name (Optional)</label>
+                    <input 
+                      type="text" 
+                      value={suggestionName} 
+                      onChange={(e) => setSuggestionName(e.target.value)} 
+                      placeholder="Trader nickname or name" 
+                      className="w-full bg-black border border-white/20 rounded-xl p-3.5 text-white font-inter text-sm font-medium placeholder:text-zinc-500" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-zinc-300 text-xs font-semibold mb-1">Your Suggestion / Idea</label>
+                    <textarea 
+                      required 
+                      rows={4}
+                      value={suggestionText} 
+                      onChange={(e) => setSuggestionText(e.target.value)} 
+                      placeholder="What would you like to see added or improved?..." 
+                      className="w-full bg-black border border-white/20 rounded-xl p-3.5 text-white font-inter text-sm font-medium placeholder:text-zinc-500 resize-none" 
+                    />
+                  </div>
+                  <button 
+                    type="submit" 
+                    className="w-full mt-2 bg-white text-black font-bold text-sm py-4 rounded-xl hover:bg-zinc-200 transition-colors shadow-lg"
+                  >
+                    Send Suggestion &rarr;
+                  </button>
+                  {suggestionStatus && (
+                    <p className="mt-2 text-center text-xs sm:text-sm font-bold font-inter text-[#10b981]">
+                      {suggestionStatus}
+                    </p>
+                  )}
+                </form>
+              </div>
+            )}
+
+          </div>
+        </div>
+      )}
+
+      {/* ─── LIGHTBOX MODAL (For viewing full resolution proof) ─── */}
+      {lightboxMedia && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in"
+          onClick={() => setLightboxMedia(null)}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <button 
+              onClick={() => setLightboxMedia(null)} 
+              className="absolute -top-12 right-0 text-white hover:text-[#d4af37] bg-white/10 p-2 rounded-full border border-white/20"
+              aria-label="Close image"
+            >
+              <X className="w-5 h-5" />
+            </button>
+            {lightboxMedia.isVideo ? (
+              <video 
+                src={lightboxMedia.src} 
+                controls 
+                autoPlay 
+                playsInline
+                className="max-w-full max-h-[85vh] rounded-2xl border border-white/20 shadow-2xl" 
+              />
+            ) : (
+              <img 
+                src={lightboxMedia.src} 
+                alt={lightboxMedia.title || "Verified trade"} 
+                className="max-w-full max-h-[85vh] object-contain rounded-2xl border border-white/20 shadow-2xl" 
+              />
+            )}
+            {lightboxMedia.title && (
+              <p className="text-white text-sm font-semibold mt-3 text-center bg-black/80 px-4 py-1.5 rounded-full border border-white/10">
+                {lightboxMedia.title}
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
       {/* ─── MAIN CONTENT ─── */}
       <main className={`relative z-10 flex flex-col items-center min-h-screen px-4 sm:px-6 md:px-12 ${settings.scarcity_banner_active === 'true' ? 'pt-[140px] sm:pt-[160px]' : 'pt-[100px] sm:pt-[120px]'} pb-0 max-w-[1400px] mx-auto`}>
         
@@ -1074,35 +1319,43 @@ function Home() {
           </div>
         </div>
 
-        {/* ═══ PROOF SECTION (Spacious, Separated, Uncrowded) ═══ */}
-        <div id="proof-section" className="mt-20 sm:mt-32 w-full max-w-[1200px] scroll-mt-24 sm:scroll-mt-32">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-10 gap-3 border-b border-white/10 pb-4">
+        {/* ═══ ELEGANT SECTION II BREAK (Ample Spacing to feel like a new page) ═══ */}
+        <div className="w-full flex flex-col items-center justify-center my-32 sm:my-48 md:my-60 relative">
+          <div className="w-full max-w-[840px] h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/40 to-transparent" />
+          <div className="absolute bg-[#050505] px-6 sm:px-8 py-2 sm:py-2.5 rounded-full border border-[#d4af37]/35 text-[11px] sm:text-[12px] font-bold text-[#d4af37] tracking-[0.25em] uppercase shadow-[0_0_25px_rgba(212,175,55,0.18)] flex items-center gap-2">
+            <span>Verified Execution Records</span>
+          </div>
+        </div>
+
+        {/* ═══ RESULTS / LATEST VERIFIED TRADES ═══ */}
+        <div id="proof-section" className="w-full max-w-[1240px] scroll-mt-24 sm:scroll-mt-32">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-12 gap-4 border-b border-white/10 pb-5">
             <div>
-              <span className="text-[12px] text-[#d4af37] font-bold uppercase tracking-widest block mb-1">Live Executions</span>
-              <h2 className="font-playfair text-[28px] sm:text-[36px] font-bold text-white m-0">Latest Verified Trades</h2>
+              <span className="text-[12px] sm:text-[13px] text-[#d4af37] font-bold uppercase tracking-[0.2em] block mb-1">Results</span>
+              <h2 className="font-playfair text-[30px] sm:text-[42px] font-black text-white m-0">Latest Verified Trades</h2>
             </div>
             <button 
               onClick={() => setShowAllProofs(!showAllProofs)} 
-              className="text-[#d4af37] text-[13px] sm:text-[15px] font-bold hover:text-[#f9e7b9] flex items-center gap-1.5 transition-colors"
+              className="text-[#d4af37] text-[13px] sm:text-[14px] font-bold hover:text-[#f9e7b9] flex items-center gap-2 transition-all border border-[#d4af37]/40 bg-black/80 hover:bg-[#d4af37]/10 px-5 py-2.5 rounded-full shadow-md"
             >
-              {showAllProofs ? "Show fewer trades" : `View all ${activeProofs.length} verified trades`} <ArrowRight className={`w-4 h-4 transition-transform ${showAllProofs ? 'rotate-90' : ''}`} />
+              {showAllProofs ? "Show Less" : `View All (${activeProofs.length} Setups)`} <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showAllProofs ? 'rotate-180' : ''}`} />
             </button>
           </div>
 
-          {/* Spacious, separated grid: 1 column on mobile, 2 columns on desktop so cards are large and never squished */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 lg:gap-8">
-            {(showAllProofs ? activeProofs : top4Proofs).map((proof, i) => (
-              <ProofCard key={i} {...proof} />
+          {/* 3 Columns Grid: Exactly 3 images shown initially; expands to all 10 when toggled */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7 lg:gap-8">
+            {(showAllProofs ? activeProofs : top3Proofs).map((proof, i) => (
+              <ProofCard key={i} {...proof} onOpenLightbox={(media: any) => setLightboxMedia(media)} />
             ))}
           </div>
 
-          {!showAllProofs && activeProofs.length > 4 && (
-            <div className="flex justify-center mt-10">
+          {!showAllProofs && activeProofs.length > 3 && (
+            <div className="flex justify-center mt-12 sm:mt-16">
               <button 
                 onClick={() => setShowAllProofs(true)} 
-                className="flex items-center gap-2 border border-[#d4af37]/50 bg-black/80 hover:bg-[#d4af37]/10 text-[#d4af37] px-8 py-3 rounded-full text-[14px] font-bold transition-all shadow-md"
+                className="flex items-center gap-2.5 border border-[#d4af37]/60 bg-gradient-to-r from-black via-zinc-950 to-black hover:border-[#d4af37] text-[#d4af37] hover:text-[#f9e7b9] px-8 sm:px-10 py-3.5 sm:py-4 rounded-full text-[14px] sm:text-[15px] font-bold transition-all shadow-[0_0_25px_rgba(212,175,55,0.18)]"
               >
-                View Full Trade Archive ({activeProofs.length} setups) <ChevronDown className="w-4 h-4" />
+                View All Results &amp; Verified Trades ({activeProofs.length}) <ChevronDown className="w-4 h-4" />
               </button>
             </div>
           )}
@@ -1120,134 +1373,6 @@ function Home() {
           <button onClick={() => handleTrackedLink('telegram_why_free', telegramLink)} className="mt-8 flex items-center gap-2 bg-gradient-to-br from-[#f9e7b9] to-[#d4af37] text-black text-[15px] sm:text-[16px] font-bold rounded-full px-8 py-3.5 sm:py-4 shadow-[0_0_30px_rgba(212,175,55,0.2)] relative z-10 btn-sheen">
             Join Free Telegram <ArrowRight className="w-4 h-4" />
           </button>
-        </div>
-
-        {/* ═══ ACCOUNT MANAGEMENT (With Collapsible Inquiry Box) ═══ */}
-        <div id="account-mgmt" className="mt-20 sm:mt-32 w-full max-w-[1200px] border-t border-white/10 pt-12 sm:pt-20 scroll-mt-24 sm:scroll-mt-32">
-          <div className="flex flex-col items-center text-center mb-10 sm:mb-16 px-4">
-            <span className="text-[#d4af37] font-bold uppercase text-[12px] tracking-widest mb-2">Hands-Free Growth</span>
-            <h2 className="font-playfair text-[28px] sm:text-[48px] font-black text-white leading-[1.1] mb-3 sm:mb-4">We Trade. You Profit.</h2>
-            <p className="text-[16px] sm:text-[20px] text-[#f9e7b9] font-playfair font-bold mb-4 sm:mb-6 max-w-[800px]">Let the professionals handle it. You do nothing.</p>
-            <p className="text-zinc-100 font-inter font-medium text-[15px] sm:text-[16px] max-w-[800px] leading-[1.75]">Not everyone has the time to sit at charts every day. Account management is for traders who want professional-level results without having to do the work themselves. Whether you have a personal trading account or a funded prop firm account &mdash; we manage it for you, and we split the profits fairly.</p>
-          </div>
-
-          {/* 3 Step Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 mb-8 sm:mb-12">
-            {[
-              { n: "01", t: "Share Access", d: "You share investor access to your trading account — whether it is a personal broker account or a prop firm funded challenge." },
-              { n: "02", t: "We Execute", d: "We handle all the analysis, execution, and risk management on your behalf using the exact same elite precision applied to our own accounts." },
-              { n: "03", t: "You Grow", d: "You watch your account grow without lifting a finger. At the end of each trading period, we split the generated profits fairly." }
-            ].map(c => (
-              <div key={c.n} className="bg-[#0c0c0c]/90 border border-white/15 rounded-2xl p-6 shadow-xl">
-                <div className="text-[#d4af37] text-3xl mb-3 font-black opacity-40">{c.n}</div>
-                <h3 className="text-lg font-bold text-white mb-2">{c.t}</h3>
-                <p className="text-zinc-200 font-inter font-medium text-[14px] leading-relaxed">{c.d}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Collapsed Inquiry Box Container */}
-          <div className="max-w-[700px] mx-auto w-full bg-black/60 border border-white/15 rounded-2xl p-6 shadow-xl">
-            <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <h4 className="text-white font-bold text-base sm:text-lg">Ready to have your account managed?</h4>
-                <p className="text-zinc-300 font-inter font-medium text-xs sm:text-sm mt-1">Submit an inquiry or connect with the trader directly on Telegram.</p>
-              </div>
-              <button 
-                onClick={() => setMgmtInquiryOpen(!mgmtInquiryOpen)} 
-                className="bg-[#d4af37] text-black font-bold text-xs sm:text-sm px-6 py-3 rounded-full shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:bg-[#f9e7b9] transition-colors whitespace-nowrap flex items-center gap-1.5"
-              >
-                {mgmtInquiryOpen ? 'Collapse Form' : 'Apply for Management'} {mgmtInquiryOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-              </button>
-            </div>
-
-            {/* Collapsible Form Body */}
-            {mgmtInquiryOpen && (
-              <form onSubmit={submitMgmtInquiry} className="mt-6 pt-6 border-t border-white/10 flex flex-col gap-4 animate-fade-in">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-zinc-300 text-xs font-semibold mb-1">Full Name</label>
-                    <input 
-                      required 
-                      type="text" 
-                      value={mgmtName} 
-                      onChange={(e) => setMgmtName(e.target.value)} 
-                      placeholder="e.g. David Ross" 
-                      className="w-full bg-black border border-white/20 rounded-xl p-3 text-white text-sm font-medium placeholder:text-zinc-400" 
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-zinc-300 text-xs font-semibold mb-1">Telegram or Email</label>
-                    <input 
-                      required 
-                      type="text" 
-                      value={mgmtContact} 
-                      onChange={(e) => setMgmtContact(e.target.value)} 
-                      placeholder="@username or email" 
-                      className="w-full bg-black border border-white/20 rounded-xl p-3 text-white text-sm font-medium placeholder:text-zinc-400" 
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-zinc-300 text-xs font-semibold mb-1">Account Size</label>
-                    <select 
-                      value={mgmtSize} 
-                      onChange={(e) => setMgmtSize(e.target.value)} 
-                      className="w-full bg-black border border-white/20 rounded-xl p-3 text-white text-sm font-medium"
-                    >
-                      <option value="$10,000 - $25,000">$10,000 - $25,000</option>
-                      <option value="$25,000 - $50,000">$25,000 - $50,000</option>
-                      <option value="$50,000 - $100,000">$50,000 - $100,000</option>
-                      <option value="$100,000 - $200,000">$100,000 - $200,000</option>
-                      <option value="$200,000+">$200,000+ (Institutional)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-zinc-300 text-xs font-semibold mb-1">Account Type</label>
-                    <select 
-                      value={mgmtType} 
-                      onChange={(e) => setMgmtType(e.target.value)} 
-                      className="w-full bg-black border border-white/20 rounded-xl p-3 text-white text-sm font-medium"
-                    >
-                      <option value="Personal Broker Account">Personal Broker Account</option>
-                      <option value="Prop Firm Funded Account">Prop Firm Funded Account</option>
-                      <option value="Prop Firm Challenge / Evaluation">Prop Firm Challenge / Evaluation</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-zinc-300 text-xs font-semibold mb-1">Notes or Specific Goals (Optional)</label>
-                  <textarea 
-                    rows={2} 
-                    value={mgmtNotes} 
-                    onChange={(e) => setMgmtNotes(e.target.value)} 
-                    placeholder="Tell us about your account or timeline..." 
-                    className="w-full bg-black border border-white/20 rounded-xl p-3 text-white text-sm font-medium placeholder:text-zinc-400 resize-none" 
-                  />
-                </div>
-
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
-                  <button type="submit" className="w-full sm:w-auto bg-[#d4af37] text-black font-bold text-sm px-8 py-3.5 rounded-full hover:bg-[#f9e7b9] transition-colors shadow-md">
-                    Submit Application &rarr;
-                  </button>
-                  <button 
-                    type="button" 
-                    onClick={() => handleTrackedLink('mgmt_direct_telegram', telegramLink)}
-                    className="text-zinc-300 hover:text-white text-xs font-semibold flex items-center gap-1.5"
-                  >
-                    Or enquire directly on Telegram <ExternalLink className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-
-                {mgmtStatus && (
-                  <p className="text-center text-[#10b981] font-bold text-sm font-inter mt-1">{mgmtStatus}</p>
-                )}
-              </form>
-            )}
-          </div>
         </div>
 
         {/* ═══ REVIEWS ═══ */}
@@ -1326,40 +1451,6 @@ function Home() {
           </div>
         </div>
 
-        {/* ═══ EMAIL WAITLIST ═══ */}
-        <div id="waitlist" className="mt-20 sm:mt-32 w-full max-w-[800px] mx-auto scroll-mt-24 sm:scroll-mt-32 border-t border-white/10 pt-12 sm:pt-20 px-4 sm:px-0">
-          <div className="bg-gradient-to-br from-[#d4af37]/15 to-[#0a0a0a] border border-[#d4af37]/40 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-12 text-center relative overflow-hidden shadow-2xl">
-            <div className="absolute -bottom-20 -right-20 w-[200px] sm:w-[250px] h-[200px] sm:h-[250px] bg-[#d4af37]/10 blur-[80px] rounded-full pointer-events-none"></div>
-            <Mail className="w-8 h-8 sm:w-10 sm:h-10 text-[#d4af37] mx-auto mb-3 sm:mb-4" />
-            <h2 className="font-playfair text-[24px] sm:text-[40px] font-black text-white leading-[1.1] mb-3 sm:mb-4 relative z-10">Stay Ahead of the Market</h2>
-            <p className="text-zinc-200 font-inter font-medium text-[14px] sm:text-[15px] mb-6 sm:mb-8 max-w-[500px] mx-auto relative z-10">Join the waitlist and be the first to know when we drop exclusive content, courses, and limited VIP slots. No spam — only signal.</p>
-            <form onSubmit={submitWaitlist} className="flex flex-col sm:flex-row gap-3 relative z-10 max-w-[500px] mx-auto">
-              <input type="text" value={waitlistName} onChange={(e) => setWaitlistName(e.target.value)} placeholder="Your name" className="bg-black/80 border border-white/20 rounded-xl p-3.5 sm:p-4 text-white font-inter text-sm font-medium flex-1 min-w-0 placeholder:text-zinc-400" />
-              <input required type="email" value={waitlistEmail} onChange={(e) => setWaitlistEmail(e.target.value)} placeholder="Your email" className="bg-black/80 border border-white/20 rounded-xl p-3.5 sm:p-4 text-white font-inter text-sm font-medium flex-1 min-w-0 placeholder:text-zinc-400" />
-              <button type="submit" className="bg-[#d4af37] text-black font-bold text-sm px-6 py-3.5 sm:py-4 rounded-xl hover:bg-[#f9e7b9] transition-colors whitespace-nowrap shadow-md">Join Waitlist</button>
-            </form>
-            {waitlistStatus && <p className={`mt-3 sm:mt-4 text-[13px] sm:text-sm font-bold font-inter relative z-10 ${waitlistStatus.includes('error') || waitlistStatus.includes('already') ? 'text-red-400' : 'text-[#10b981]'}`}>{waitlistStatus}</p>}
-          </div>
-        </div>
-
-        {/* ═══ SUGGESTIONS ═══ */}
-        <div id="suggestions" className="mt-16 sm:mt-24 w-full max-w-[800px] mx-auto px-4 sm:px-0 scroll-mt-24 sm:scroll-mt-32">
-          <div className="bg-[#0c0c0c]/90 border border-white/15 rounded-[1.5rem] sm:rounded-[2rem] p-6 sm:p-12 text-center relative overflow-hidden shadow-xl">
-            <div className="absolute -top-32 -left-32 w-[200px] sm:w-[300px] h-[200px] sm:h-[300px] bg-[#d4af37]/10 blur-[80px] sm:blur-[100px] rounded-full pointer-events-none"></div>
-            <MessageCircle className="w-8 h-8 sm:w-10 sm:h-10 text-[#d4af37] mx-auto mb-3 sm:mb-4 relative z-10" />
-            <h2 className="font-playfair text-[24px] sm:text-[40px] font-black text-white leading-[1.1] mb-3 sm:mb-4 relative z-10">Make Midas Better</h2>
-            <p className="text-zinc-200 font-inter font-medium text-[14px] sm:text-[15px] mb-5 sm:mb-8 max-w-[600px] mx-auto relative z-10">If you have an idea, a request, or something you think would make this group even better — tell us. Every suggestion is read personally.</p>
-            <form onSubmit={submitSuggestion} className="flex flex-col gap-3 sm:gap-4 relative z-10 text-left">
-              <input type="text" value={suggestionName} onChange={(e) => setSuggestionName(e.target.value)} placeholder="Name (optional)" className="bg-black/80 border border-white/20 rounded-xl p-3.5 sm:p-4 text-white font-inter text-sm font-medium placeholder:text-zinc-400" />
-              <textarea required value={suggestionText} onChange={(e) => setSuggestionText(e.target.value)} rows={3} placeholder="Your suggestion..." className="bg-black/80 border border-white/20 rounded-xl p-3.5 sm:p-4 text-white font-inter text-sm font-medium placeholder:text-zinc-400 resize-none"></textarea>
-              <div className="flex flex-col sm:flex-row items-center justify-between mt-1 sm:mt-2 gap-3">
-                <button type="submit" className="bg-white text-black font-bold text-sm px-6 py-3.5 rounded-full hover:bg-zinc-200 transition-colors w-full sm:w-auto">Send Suggestion</button>
-                {suggestionStatus && <span className="text-[#10b981] text-[13px] sm:text-sm font-bold font-inter">{suggestionStatus}</span>}
-              </div>
-            </form>
-          </div>
-        </div>
-
       </main>
 
       {/* ═══ FOOTER ═══ */}
@@ -1376,19 +1467,19 @@ function Home() {
             <div>
               <h4 className="text-white font-bold text-[13px] sm:text-sm mb-4 uppercase tracking-widest">Navigate</h4>
               <ul className="flex flex-col gap-2">
-                <li><button onClick={(e) => handleNavClick(e, 'proof-section')} className="text-zinc-300 hover:text-[#d4af37] text-[13px] sm:text-sm font-inter font-medium transition-colors text-left">Verified Proof</button></li>
+                <li><button onClick={(e) => handleNavClick(e, 'proof-section')} className="text-zinc-300 hover:text-[#d4af37] text-[13px] sm:text-sm font-inter font-medium transition-colors text-left">Latest Results</button></li>
                 <li><button onClick={() => setVipModalOpen(true)} className="text-[#d4af37] hover:text-[#f9e7b9] text-[13px] sm:text-sm font-inter font-bold transition-colors text-left flex items-center gap-1"><Crown className="w-3.5 h-3.5" /> VIP Membership</button></li>
                 <li><button onClick={(e) => handleNavClick(e, 'reviews')} className="text-zinc-300 hover:text-[#d4af37] text-[13px] sm:text-sm font-inter font-medium transition-colors text-left">Reviews</button></li>
                 <li><button onClick={(e) => handleNavClick(e, 'faq')} className="text-zinc-300 hover:text-[#d4af37] text-[13px] sm:text-sm font-inter font-medium transition-colors text-left">FAQ</button></li>
-                <li><button onClick={(e) => handleNavClick(e, 'suggestions')} className="text-zinc-300 hover:text-[#d4af37] text-[13px] sm:text-sm font-inter font-medium transition-colors text-left">Suggestions</button></li>
+                <li><button onClick={() => { setCommunityModalOpen(true); setCommunityTab('SUGGESTION'); }} className="text-zinc-300 hover:text-[#d4af37] text-[13px] sm:text-sm font-inter font-medium transition-colors text-left">Suggestions</button></li>
               </ul>
             </div>
             <div>
-              <h4 className="text-white font-bold text-[13px] sm:text-sm mb-4 uppercase tracking-widest">Services</h4>
+              <h4 className="text-white font-bold text-[13px] sm:text-sm mb-4 uppercase tracking-widest">Services &amp; Access</h4>
               <ul className="flex flex-col gap-2">
                 <li><a href="#why-free" onClick={(e) => handleNavClick(e, 'why-free')} className="text-zinc-300 hover:text-[#d4af37] text-[13px] sm:text-sm font-inter font-medium transition-colors">Free Signals</a></li>
-                <li><button onClick={() => setVipModalOpen(true)} className="text-zinc-300 hover:text-[#d4af37] text-[13px] sm:text-sm font-inter font-medium transition-colors text-left">VIP Signals</button></li>
-                <li><a href="#account-mgmt" onClick={(e) => handleNavClick(e, 'account-mgmt')} className="text-zinc-300 hover:text-[#d4af37] text-[13px] sm:text-sm font-inter font-medium transition-colors">Account Management</a></li>
+                <li><button onClick={() => setVipModalOpen(true)} className="text-zinc-300 hover:text-[#d4af37] text-[13px] sm:text-sm font-inter font-medium transition-colors text-left">VIP Membership</button></li>
+                <li><button onClick={() => { setCommunityModalOpen(true); setCommunityTab('WAITLIST'); }} className="text-zinc-300 hover:text-[#d4af37] text-[13px] sm:text-sm font-inter font-medium transition-colors text-left">Stay Ahead (Waitlist)</button></li>
               </ul>
             </div>
             <div>
