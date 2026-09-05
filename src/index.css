@@ -5,6 +5,8 @@
   --font-podium: "FSP DEMO - PODIUM Sharp 4.11", sans-serif;
   --font-inter: "Inter", sans-serif;
   --font-playfair: "Playfair Display", serif;
+  --font-cinzel: "Cinzel", serif;
+  --font-outfit: "Outfit", sans-serif;
   --color-gold: #E8C361;
   --color-gold-dark: #C6A03F;
 }
@@ -51,6 +53,24 @@ html {
 
   .font-playfair {
     font-family: "Playfair Display", serif;
+  }
+
+  .font-cinzel {
+    font-family: "Cinzel", serif;
+  }
+
+  .font-outfit {
+    font-family: "Outfit", sans-serif;
+  }
+
+  .gold-gradient-text {
+    background: linear-gradient(135deg, #FFF6D3 0%, #F5D37D 30%, #D4AF37 60%, #9F7B22 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  .gold-glow {
+    filter: drop-shadow(0 2px 14px rgba(212, 175, 55, 0.45));
   }
 
   .animate-fade-up {

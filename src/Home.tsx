@@ -1,9 +1,9 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
-  X, ArrowRight, ChevronDown, ChevronUp, Star, ArrowUp, Mail, 
+  X, ArrowRight, ChevronDown, ChevronUp, ChevronLeft, ChevronRight, Star, ArrowUp, Mail, 
   MessageCircle, Shield, MoreVertical, Check, ExternalLink, 
-  Crown, Share2, Maximize2
+  Crown, Share2, Maximize2, Layers, Sparkles
 } from 'lucide-react';
 import { reviewsData as staticReviewsData } from './reviewsData';
 
@@ -27,7 +27,7 @@ function trackClick(target: string) {
 const DEFAULT_PROOFS = [
   {
     filename: "photo_5942833990374985878_y.jpg",
-    title: "Live MT5 Gold Short Execution",
+    title: "Live MT5 Code, Short Execution",
     subtitle: "Stacked intraday sell positions capturing the 127-pip drop.",
     badge: "+£228,624.29",
     isRed: false,
@@ -335,7 +335,31 @@ function Home() {
   const [communityModalOpen, setCommunityModalOpen] = useState(false);
   const [communityTab, setCommunityTab] = useState<'WAITLIST' | 'SUGGESTION'>('WAITLIST');
   const [lightboxMedia, setLightboxMedia] = useState<{ src: string; isVideo?: boolean; title?: string } | null>(null);
-  const [showAllProofs, setShowAllProofs] = useState(false);
+  const [activeProofSlide, setActiveProofSlide] = useState(0);
+  const [allProofsModalOpen, setAllProofsModalOpen] = useState(false);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const [touchEndX, setTouchEndX] = useState<number | null>(null);
+
+  const handleProofTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.targetTouches[0].clientX);
+    setTouchEndX(null);
+  };
+
+  const handleProofTouchMove = (e: React.TouchEvent) => {
+    setTouchEndX(e.targetTouches[0].clientX);
+  };
+
+  const handleProofTouchEnd = () => {
+    if (touchStartX === null || touchEndX === null) return;
+    const distance = touchStartX - touchEndX;
+    if (distance > 45 && activeProofSlide < 3) {
+      setActiveProofSlide(prev => Math.min(3, prev + 1));
+    } else if (distance < -45 && activeProofSlide > 0) {
+      setActiveProofSlide(prev => Math.max(0, prev - 1));
+    }
+    setTouchStartX(null);
+    setTouchEndX(null);
+  };
   
   // Dynamic Data States initialized with reliable fallbacks
   const [reviewsData, setReviewsData] = useState<any[]>(staticReviewsData);
@@ -370,7 +394,6 @@ function Home() {
 
   // Fallback data in case backend hasn't initialized yet
   const activeProofs = proofsData && proofsData.length > 0 ? proofsData : DEFAULT_PROOFS;
-  const top3Proofs = activeProofs.slice(0, 3);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -457,9 +480,12 @@ function Home() {
       else setCommunityTab('WAITLIST');
       return;
     }
-    if (targetId === 'proof-all' || targetId === 'proof-section') setShowAllProofs(true);
+    if (targetId === 'proof-all') {
+      setAllProofsModalOpen(true);
+      return;
+    }
     setTimeout(() => {
-      const element = document.getElementById(targetId === 'proof-all' ? 'proof-section' : targetId);
+      const element = document.getElementById(targetId);
       if (element) {
         // Offset for sticky header
         const y = element.getBoundingClientRect().top + window.scrollY - 80;
@@ -1241,6 +1267,66 @@ function Home() {
         </div>
       )}
 
+      {/* ─── ALL VERIFIED RESULTS & VIDEO MODAL (Vault Gallery to save space) ─── */}
+      {allProofsModalOpen && (
+        <div 
+          className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in" 
+          onClick={(e) => { if (e.target === e.currentTarget) setAllProofsModalOpen(false); }}
+        >
+          <div className="bg-[#0a0a0a] border border-[#E8C361]/35 rounded-3xl p-5 sm:p-8 md:p-10 max-w-5xl w-full relative my-auto shadow-[0_0_60px_rgba(0,0,0,0.95)] max-h-[92vh] overflow-y-auto hide-scrollbar">
+            <button 
+              onClick={() => setAllProofsModalOpen(false)} 
+              className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white flex items-center justify-center transition-colors border border-white/15"
+              aria-label="Close modal"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex flex-col items-start mb-8">
+              <div className="flex items-center gap-2 text-[#E8C361] text-xs uppercase font-cinzel font-bold tracking-[0.25em] mb-2">
+                <Sparkles className="w-4 h-4" /> Full Verification Vault
+              </div>
+              <h2 className="font-playfair text-[26px] sm:text-[38px] font-black text-white leading-tight">
+                All 10 Verified Results &amp; Video Recordings
+              </h2>
+              <p className="text-zinc-200 font-outfit text-xs sm:text-sm mt-2 max-w-[650px] leading-relaxed">
+                Every trade executed on live capital. Click any card below to zoom in on lot sizes, execution times, and pips in high resolution, or watch the direct MT5 video recording.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
+              {activeProofs.map((proof, idx) => (
+                <ProofCard 
+                  key={idx} 
+                  {...proof} 
+                  onOpenLightbox={(media: any) => setLightboxMedia(media)} 
+                />
+              ))}
+            </div>
+
+            <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+              <span className="text-zinc-300 font-outfit text-xs sm:text-sm">
+                Get real-time execution alerts on your phone:
+              </span>
+              <div className="flex items-center gap-3 w-full sm:w-auto">
+                <button
+                  onClick={() => setAllProofsModalOpen(false)}
+                  className="flex-1 sm:flex-none border border-white/20 text-white font-outfit text-xs sm:text-sm font-semibold px-6 py-3 rounded-full hover:bg-white/10 transition-colors"
+                >
+                  Back to Website
+                </button>
+                <button
+                  onClick={() => { setAllProofsModalOpen(false); handleTrackedLink('vault_telegram_cta', telegramLink); }}
+                  className="flex-1 sm:flex-none bg-gradient-to-r from-[#FFF2BD] via-[#E8C361] to-[#AA8222] text-black font-cinzel font-bold text-xs sm:text-sm px-7 py-3 rounded-full btn-sheen shadow-lg flex items-center justify-center gap-2"
+                >
+                  Join Free Telegram <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ─── MAIN CONTENT ─── */}
       <main className={`relative z-10 flex flex-col items-center min-h-screen px-4 sm:px-6 md:px-12 ${settings.scarcity_banner_active === 'true' ? 'pt-[140px] sm:pt-[160px]' : 'pt-[100px] sm:pt-[120px]'} pb-0 max-w-[1400px] mx-auto`}>
         
@@ -1261,15 +1347,15 @@ function Home() {
 
           <h1 className="font-playfair font-normal text-white leading-[1.14] sm:leading-[1.08] tracking-[-0.01em]" style={{ fontSize: 'clamp(42px, 8.5vw, 92px)' }}>
             Turn Market Liquidity <br className="hidden sm:inline" />
-            Into <span className="text-transparent bg-clip-text bg-gradient-to-br from-[#f9e7b9] via-[#d4af37] to-[#8c6b12]">Pure Gold.</span>
+            Into <span className="font-cinzel font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-[#FFF8DB] via-[#E8C361] to-[#9C751E] drop-shadow-[0_4px_24px_rgba(232,195,97,0.5)]">Pure Gold.</span>
           </h1>
 
           {/* Bold, high-contrast text separated by large editorial gap */}
-          <p className="mt-16 sm:mt-24 md:mt-28 text-[17px] sm:text-[21px] leading-[1.65] text-white max-w-[720px] font-inter font-semibold">
-            We trade 20 forex pairs including gold. Clean analysis. Elite risk-to-reward. <span className="text-[#f9e7b9] font-bold">4 weeks straight without a stop loss.</span>
+          <p className="mt-16 sm:mt-24 md:mt-28 text-[17px] sm:text-[21px] leading-[1.65] text-white max-w-[720px] font-outfit font-semibold">
+            We trade 20 forex pairs including gold. Clean analysis. Elite risk-to-reward. <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF4CC] via-[#E8C361] to-[#BA902C] font-bold font-outfit">4 weeks straight without a stop loss.</span>
           </p>
 
-          <p className="mt-4 sm:mt-6 text-[15px] sm:text-[17px] leading-[1.75] text-zinc-100 max-w-[680px] font-inter font-medium">
+          <p className="mt-4 sm:mt-6 text-[15px] sm:text-[17px] leading-[1.75] text-zinc-100 max-w-[680px] font-outfit font-medium">
             Midas Markets is a live trading operation you get to watch in real time. Every day we post full chart breakdowns, show exactly why we enter, and share verified proof. No guessing. No recycled ideas. Just clean trades that print.
             <br/><br/>
             <strong className="text-white font-bold">Do we occasionally hit stop loss? Yes.</strong> Every real trader does. But we always recover &mdash; tighter, faster, and more precise than before. That is the journey.
@@ -1278,87 +1364,315 @@ function Home() {
           {/* Desktop CTA Row */}
           <div className="mt-8 sm:mt-10 hidden md:flex flex-col items-start gap-2.5">
             <div className="flex gap-4 flex-wrap items-center">
-              <button onClick={() => handleTrackedLink('telegram_hero_cta', telegramLink)} className="flex items-center gap-2 bg-gradient-to-br from-[#f9e7b9] to-[#d4af37] text-black text-[15px] font-bold rounded-full px-7 py-3.5 hover:scale-105 transition-transform btn-sheen shadow-lg">
+              <button onClick={() => handleTrackedLink('telegram_hero_cta', telegramLink)} className="flex items-center gap-2 bg-gradient-to-r from-[#FFF2BC] via-[#E8C361] to-[#AA8222] text-black text-[15px] font-cinzel font-extrabold tracking-wider rounded-full px-8 py-4 hover:scale-105 transition-all btn-sheen shadow-[0_0_30px_rgba(232,195,97,0.35)]">
                 Join Free &mdash; Steal the Signals <ArrowRight className="w-4 h-4" />
               </button>
-              <button onClick={() => setSocialModalOpen(true)} className="flex items-center justify-center border border-white/30 text-white text-[15px] font-semibold rounded-full px-6 py-3.5 hover:bg-white/10 transition-colors">
+              <button onClick={() => setSocialModalOpen(true)} className="flex items-center justify-center border border-white/30 text-white text-[15px] font-outfit font-semibold rounded-full px-6 py-3.5 hover:bg-white/10 transition-colors">
                 View Official Socials
               </button>
             </div>
-            <span className="text-[12px] sm:text-[13px] text-zinc-300 font-semibold tracking-[0.03em] mt-1 font-inter">4 weeks. 20 pairs. Zero stop losses hit. Come see why.</span>
+            <span className="text-[12px] sm:text-[13px] text-zinc-300 font-semibold tracking-[0.03em] mt-1 font-outfit">4 weeks. 20 pairs. Zero stop losses hit. Come see why.</span>
           </div>
           
           {/* Mobile CTA */}
           <div className="mt-6 md:hidden w-full flex flex-col gap-3">
-             <button onClick={() => handleTrackedLink('telegram_hero_mobile', telegramLink)} className="w-full flex items-center justify-center gap-2 bg-gradient-to-br from-[#f9e7b9] to-[#d4af37] text-black text-[15px] font-bold rounded-full px-5 py-3.5 btn-sheen shadow-lg">
+             <button onClick={() => handleTrackedLink('telegram_hero_mobile', telegramLink)} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#FFF2BC] via-[#E8C361] to-[#AA8222] text-black text-[15px] font-cinzel font-extrabold tracking-wider rounded-full px-5 py-3.5 btn-sheen shadow-lg">
                 Join Free on Telegram <ArrowRight className="w-4 h-4" />
              </button>
-             <button onClick={() => setSocialModalOpen(true)} className="w-full flex items-center justify-center border border-white/20 text-white text-[14px] font-semibold rounded-full px-5 py-3 hover:bg-white/5 transition-colors">
+             <button onClick={() => setSocialModalOpen(true)} className="w-full flex items-center justify-center border border-white/20 text-white text-[14px] font-outfit font-semibold rounded-full px-5 py-3 hover:bg-white/5 transition-colors">
                 Official Social Media Hub
              </button>
           </div>
 
           {/* Stats Bar */}
-          <div className="mt-10 sm:mt-14 flex gap-4 sm:gap-12 flex-wrap w-full bg-black/40 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-sm">
+          <div className="mt-10 sm:mt-14 flex gap-4 sm:gap-12 flex-wrap w-full bg-black/50 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-md shadow-2xl">
             {[
               { val: "1,400+", label: "Members" },
               { val: "20", label: "Pairs Traded" },
               { val: "1:3.4", label: "Avg RR" },
             ].map(s => (
               <div key={s.label} className="flex flex-col flex-1 min-w-[28%]">
-                <div className="font-playfair text-[26px] sm:text-[32px] font-extrabold leading-[1] text-transparent bg-clip-text bg-gradient-to-br from-[#f9e7b9] to-[#d4af37]">{s.val}</div>
-                <div className="text-[11px] sm:text-[12px] tracking-[0.15em] uppercase text-zinc-200 font-bold mt-2 font-inter">{s.label}</div>
+                <div className="font-cinzel text-[28px] sm:text-[36px] font-black leading-[1] text-transparent bg-clip-text bg-gradient-to-b from-[#FFFDF2] via-[#E8C361] to-[#9C751E] drop-shadow-[0_2px_14px_rgba(232,195,97,0.4)]">{s.val}</div>
+                <div className="text-[11px] sm:text-[12px] tracking-[0.22em] uppercase text-zinc-200 font-cinzel font-bold mt-2.5">{s.label}</div>
               </div>
             ))}
             <div className="flex flex-col flex-1 min-w-[28%]">
-              <div className="font-playfair text-[26px] sm:text-[32px] font-extrabold leading-[1] text-transparent bg-clip-text bg-gradient-to-br from-[#f9e7b9] to-[#d4af37] flex items-center gap-1">
-                4.5 <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-[#d4af37] text-[#d4af37]" />
+              <div className="font-cinzel text-[28px] sm:text-[36px] font-black leading-[1] text-transparent bg-clip-text bg-gradient-to-b from-[#FFFDF2] via-[#E8C361] to-[#9C751E] flex items-center gap-1.5 drop-shadow-[0_2px_14px_rgba(232,195,97,0.4)]">
+                4.5 <Star className="w-4 h-4 sm:w-5 sm:h-5 fill-[#E8C361] text-[#E8C361]" />
               </div>
-              <div className="text-[11px] sm:text-[12px] tracking-[0.15em] uppercase text-zinc-200 font-bold mt-2 font-inter">Rating</div>
+              <div className="text-[11px] sm:text-[12px] tracking-[0.22em] uppercase text-zinc-200 font-cinzel font-bold mt-2.5">Rating</div>
             </div>
           </div>
         </div>
 
         {/* ═══ ELEGANT SECTION II BREAK (Ample Spacing to feel like a new page) ═══ */}
         <div className="w-full flex flex-col items-center justify-center my-32 sm:my-48 md:my-60 relative">
-          <div className="w-full max-w-[840px] h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/40 to-transparent" />
-          <div className="absolute bg-[#050505] px-6 sm:px-8 py-2 sm:py-2.5 rounded-full border border-[#d4af37]/35 text-[11px] sm:text-[12px] font-bold text-[#d4af37] tracking-[0.25em] uppercase shadow-[0_0_25px_rgba(212,175,55,0.18)] flex items-center gap-2">
+          <div className="w-full max-w-[840px] h-[1px] bg-gradient-to-r from-transparent via-[#E8C361]/40 to-transparent" />
+          <div className="absolute bg-[#050505] px-6 sm:px-8 py-2 sm:py-2.5 rounded-full border border-[#E8C361]/40 text-[11px] sm:text-[12px] font-cinzel font-bold text-[#E8C361] tracking-[0.28em] uppercase shadow-[0_0_30px_rgba(232,195,97,0.22)] flex items-center gap-2">
             <span>Verified Execution Records</span>
           </div>
         </div>
 
-        {/* ═══ RESULTS / LATEST VERIFIED TRADES ═══ */}
-        <div id="proof-section" className="w-full max-w-[1240px] scroll-mt-24 sm:scroll-mt-32">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 sm:mb-12 gap-4 border-b border-white/10 pb-5">
+        {/* ═══ RESULTS / LATEST VERIFIED TRADES (Compact Horizontal Swiper) ═══ */}
+        <div id="proof-section" className="w-full max-w-[1200px] scroll-mt-24 sm:scroll-mt-32">
+          {/* Header Row */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4 border-b border-white/10 pb-5">
             <div>
-              <span className="text-[12px] sm:text-[13px] text-[#d4af37] font-bold uppercase tracking-[0.2em] block mb-1">Results</span>
-              <h2 className="font-playfair text-[30px] sm:text-[42px] font-black text-white m-0">Latest Verified Trades</h2>
+              <span className="text-[12px] sm:text-[13px] text-transparent bg-clip-text bg-gradient-to-r from-[#FFF8D8] via-[#E8C361] to-[#A88022] font-cinzel font-bold uppercase tracking-[0.28em] block mb-1">
+                Results &amp; Verification
+              </span>
+              <h2 className="font-playfair text-[30px] sm:text-[44px] font-black text-white m-0 tracking-tight">
+                Latest Verified Trades
+              </h2>
             </div>
-            <button 
-              onClick={() => setShowAllProofs(!showAllProofs)} 
-              className="text-[#d4af37] text-[13px] sm:text-[14px] font-bold hover:text-[#f9e7b9] flex items-center gap-2 transition-all border border-[#d4af37]/40 bg-black/80 hover:bg-[#d4af37]/10 px-5 py-2.5 rounded-full shadow-md"
-            >
-              {showAllProofs ? "Show Less" : `View All (${activeProofs.length} Setups)`} <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${showAllProofs ? 'rotate-180' : ''}`} />
-            </button>
-          </div>
+            <div className="flex items-center gap-3">
+              {/* Desktop prev/next arrow buttons */}
+              <div className="hidden sm:flex items-center gap-1.5 bg-black/60 border border-white/15 rounded-full p-1 shadow-md">
+                <button 
+                  disabled={activeProofSlide === 0}
+                  onClick={() => setActiveProofSlide(prev => Math.max(0, prev - 1))}
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-white hover:text-[#E8C361] hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none transition-all"
+                  aria-label="Previous slide"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <span className="text-xs font-cinzel font-bold text-[#E8C361] px-2">
+                  0{activeProofSlide + 1} / 04
+                </span>
+                <button 
+                  disabled={activeProofSlide === 3}
+                  onClick={() => setActiveProofSlide(prev => Math.min(3, prev + 1))}
+                  className="w-9 h-9 rounded-full flex items-center justify-center text-white hover:text-[#E8C361] hover:bg-white/10 disabled:opacity-25 disabled:pointer-events-none transition-all"
+                  aria-label="Next slide"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
+              </div>
 
-          {/* 3 Columns Grid: Exactly 3 images shown initially; expands to all 10 when toggled */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-7 lg:gap-8">
-            {(showAllProofs ? activeProofs : top3Proofs).map((proof, i) => (
-              <ProofCard key={i} {...proof} onOpenLightbox={(media: any) => setLightboxMedia(media)} />
-            ))}
-          </div>
-
-          {!showAllProofs && activeProofs.length > 3 && (
-            <div className="flex justify-center mt-12 sm:mt-16">
+              {/* View All Button */}
               <button 
-                onClick={() => setShowAllProofs(true)} 
-                className="flex items-center gap-2.5 border border-[#d4af37]/60 bg-gradient-to-r from-black via-zinc-950 to-black hover:border-[#d4af37] text-[#d4af37] hover:text-[#f9e7b9] px-8 sm:px-10 py-3.5 sm:py-4 rounded-full text-[14px] sm:text-[15px] font-bold transition-all shadow-[0_0_25px_rgba(212,175,55,0.18)]"
+                onClick={() => setAllProofsModalOpen(true)} 
+                className="text-[#E8C361] hover:text-[#FFF6D3] text-[12px] sm:text-[13px] font-cinzel font-bold uppercase tracking-wider flex items-center gap-2 transition-all border border-[#E8C361]/40 bg-black/80 hover:bg-[#E8C361]/15 px-5 py-2.5 rounded-full shadow-[0_0_18px_rgba(232,195,97,0.18)]"
               >
-                View All Results &amp; Verified Trades ({activeProofs.length}) <ChevronDown className="w-4 h-4" />
+                <Layers className="w-4 h-4" /> View All ({activeProofs.length})
               </button>
             </div>
-          )}
+          </div>
+
+          {/* Swiper Viewport Container */}
+          <div 
+            className="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl touch-pan-y select-none"
+            onTouchStart={handleProofTouchStart}
+            onTouchMove={handleProofTouchMove}
+            onTouchEnd={handleProofTouchEnd}
+          >
+            <div 
+              className="flex w-full transition-transform duration-500 cubic-bezier(0.16, 1, 0.3, 1)"
+              style={{ transform: `translateX(-${activeProofSlide * 100}%)` }}
+            >
+              {/* Slides 1 to 3 (The 3 top verified executions) */}
+              {activeProofs.slice(0, 3).map((proof, idx) => (
+                <div key={idx} className="w-full shrink-0">
+                  <div className="bg-[#080808]/95 border border-white/15 rounded-2xl sm:rounded-3xl p-5 sm:p-7 md:p-8 backdrop-blur-xl shadow-[0_20px_60px_rgba(0,0,0,0.85)] relative overflow-hidden group hover:border-[#E8C361]/40 transition-all duration-300">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
+                      
+                      {/* Left side: Media Preview */}
+                      <div className="lg:col-span-7 flex flex-col">
+                        <div 
+                          onClick={() => setLightboxMedia({ 
+                            src: proof.filename.startsWith('http') ? proof.filename : `/proofs/${proof.filename}`, 
+                            isVideo: false, 
+                            title: proof.title 
+                          })}
+                          className="relative w-full rounded-xl sm:rounded-2xl bg-black border border-white/10 overflow-hidden cursor-pointer group/zoom flex items-center justify-center min-h-[260px] sm:min-h-[340px] md:min-h-[400px] max-h-[460px] p-2 sm:p-3"
+                        >
+                          <img 
+                            src={proof.filename.startsWith('http') ? proof.filename : `/proofs/${proof.filename}`} 
+                            alt={proof.title}
+                            className="w-full h-full max-h-[420px] object-contain rounded-lg sm:rounded-xl transition-transform duration-500 group-hover/zoom:scale-[1.02]"
+                            loading="eager"
+                          />
+                          
+                          {/* Live verified tag */}
+                          <div className="absolute top-3 left-3 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 text-[11px] sm:text-xs font-bold px-3 py-1 rounded-full flex items-center gap-1.5 backdrop-blur-md shadow-md">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                            <span className="font-cinzel tracking-wider">LIVE MT5 STATEMENT</span>
+                          </div>
+
+                          {/* Zoom prompt */}
+                          <div className="absolute bottom-3 right-3 bg-black/80 hover:bg-black text-white px-3 py-1.5 rounded-full border border-white/20 text-[11px] sm:text-xs font-outfit font-semibold flex items-center gap-1.5 backdrop-blur-md shadow-lg">
+                            <Maximize2 className="w-3.5 h-3.5 text-[#E8C361]" /> Tap to Zoom
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Right side: Details & Metrics */}
+                      <div className="lg:col-span-5 flex flex-col justify-between h-full">
+                        <div>
+                          <div className="flex items-center justify-between gap-2 mb-2">
+                            <span className="text-[10px] sm:text-[11px] font-cinzel font-bold tracking-[0.22em] uppercase text-[#E8C361] bg-[#E8C361]/10 border border-[#E8C361]/30 px-3 py-1 rounded-full">
+                              Setup 0{idx + 1} of 04
+                            </span>
+                            <span className="text-zinc-300 text-xs font-outfit font-medium flex items-center gap-1">
+                              Swipe right &rarr;
+                            </span>
+                          </div>
+
+                          {/* Banked Profit Display */}
+                          <div className="mt-3 mb-2">
+                            <div className="text-[11px] uppercase tracking-[0.22em] font-cinzel font-semibold text-zinc-300">
+                              Verified Banked Profit
+                            </div>
+                            <div className="font-cinzel text-[32px] sm:text-[42px] lg:text-[46px] font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#FFFBF0] via-[#E8C361] to-[#A37B1E] drop-shadow-[0_2px_15px_rgba(232,195,97,0.45)] leading-tight mt-1">
+                              {proof.badge}
+                            </div>
+                          </div>
+
+                          <h3 className="text-white font-cinzel font-bold text-lg sm:text-2xl leading-snug tracking-wide mt-2">
+                            {proof.title}
+                          </h3>
+
+                          <p className="text-zinc-200 font-outfit font-medium text-xs sm:text-[14px] mt-2 leading-relaxed">
+                            {proof.subtitle}
+                          </p>
+
+                          {/* Setup Breakdown */}
+                          <div className="mt-4 sm:mt-5 p-3.5 sm:p-4 rounded-xl sm:rounded-2xl bg-black/70 border border-white/10">
+                            <div className="text-[10.5px] uppercase tracking-[0.2em] font-cinzel font-bold text-[#E8C361] mb-1 flex items-center gap-1.5">
+                              <Sparkles className="w-3.5 h-3.5 text-[#E8C361]" /> Execution Breakdown
+                            </div>
+                            <p className="text-zinc-100 font-outfit text-xs sm:text-[13px] leading-relaxed">
+                              {proof.details}
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* Slide footer controls */}
+                        <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between gap-3">
+                          <div className="flex items-center gap-2">
+                            <button 
+                              disabled={activeProofSlide === 0}
+                              onClick={() => setActiveProofSlide(prev => Math.max(0, prev - 1))}
+                              className="w-10 h-10 rounded-full border border-white/20 bg-white/5 hover:bg-[#E8C361]/20 hover:border-[#E8C361] disabled:opacity-25 disabled:pointer-events-none flex items-center justify-center text-white transition-all"
+                              aria-label="Previous trade"
+                            >
+                              <ChevronLeft className="w-5 h-5" />
+                            </button>
+                            <button 
+                              disabled={activeProofSlide === 3}
+                              onClick={() => setActiveProofSlide(prev => Math.min(3, prev + 1))}
+                              className="w-10 h-10 rounded-full border border-white/20 bg-white/5 hover:bg-[#E8C361]/20 hover:border-[#E8C361] disabled:opacity-25 disabled:pointer-events-none flex items-center justify-center text-white transition-all"
+                              aria-label="Next trade"
+                            >
+                              <ChevronRight className="w-5 h-5" />
+                            </button>
+                          </div>
+
+                          <button
+                            onClick={() => setAllProofsModalOpen(true)}
+                            className="text-xs sm:text-[13px] font-cinzel font-bold text-[#E8C361] hover:text-[#FFF8D8] flex items-center gap-1.5 transition-colors"
+                          >
+                            View All 10 Results &rarr;
+                          </button>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+                </div>
+              ))}
+
+              {/* Slide 4: Dedicated "View All" Vault Card (To save space!) */}
+              <div className="w-full shrink-0">
+                <div className="bg-[#080808]/95 border border-[#E8C361]/40 rounded-2xl sm:rounded-3xl p-6 sm:p-10 md:p-12 backdrop-blur-xl shadow-[0_20px_60px_rgba(232,195,97,0.15)] relative overflow-hidden flex flex-col items-center justify-center text-center min-h-[420px] sm:min-h-[480px]">
+                  
+                  {/* Gold radial ambient */}
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#E8C361]/10 via-transparent to-black pointer-events-none" />
+
+                  <span className="text-[11px] font-cinzel font-bold tracking-[0.25em] text-[#E8C361] uppercase bg-[#E8C361]/10 border border-[#E8C361]/35 px-4 py-1.5 rounded-full mb-4">
+                    Slide 04 of 04 &middot; Verified Vault
+                  </span>
+
+                  <h3 className="font-cinzel font-black text-2xl sm:text-4xl text-white max-w-[660px] leading-tight mb-3">
+                    Explore All 10 Live Setups <br className="hidden sm:inline" />
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF8D8] via-[#E8C361] to-[#AA8222]">
+                      &amp; Video Screen Recording
+                    </span>
+                  </h3>
+
+                  <p className="text-zinc-200 font-outfit text-xs sm:text-base max-w-[560px] leading-relaxed mb-6 sm:mb-8">
+                    To preserve a fast, uncluttered homepage experience, the full trade gallery is housed inside the verified vault. Click below to inspect all 10 setups, TradingView charts, and direct MT5 screen recordings in high resolution.
+                  </p>
+
+                  {/* Thumbnail Row Preview */}
+                  <div className="flex items-center justify-center gap-2 sm:gap-3 mb-8 max-w-full overflow-x-auto hide-scrollbar px-2 py-1">
+                    {activeProofs.slice(3, 8).map((p, idx) => (
+                      <div 
+                        key={idx} 
+                        onClick={() => setAllProofsModalOpen(true)}
+                        className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl border border-white/20 overflow-hidden bg-black/80 shrink-0 opacity-85 hover:opacity-100 cursor-pointer hover:border-[#E8C361] transition-all hover:scale-105"
+                      >
+                        {p.filename.toLowerCase().endsWith('.mp4') ? (
+                          <div className="w-full h-full relative bg-zinc-900 flex items-center justify-center">
+                            <img src="/proofs/video_frame_thumb.jpg" alt="" className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                              <span className="text-[10px] font-bold text-white bg-black/70 px-1.5 py-0.5 rounded">VIDEO</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <img src={p.filename.startsWith('http') ? p.filename : `/proofs/${p.filename}`} alt="" className="w-full h-full object-cover" />
+                        )}
+                      </div>
+                    ))}
+                    <div 
+                      onClick={() => setAllProofsModalOpen(true)}
+                      className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl border border-[#E8C361]/50 bg-[#E8C361]/10 flex flex-col items-center justify-center text-[#E8C361] font-cinzel font-bold text-xs shrink-0 cursor-pointer hover:bg-[#E8C361]/20 transition-all hover:scale-105"
+                    >
+                      <span>+5 More</span>
+                    </div>
+                  </div>
+
+                  {/* Vault CTA Button */}
+                  <button
+                    onClick={() => setAllProofsModalOpen(true)}
+                    className="bg-gradient-to-r from-[#FFF2BD] via-[#E8C361] to-[#AA8222] text-black font-cinzel font-extrabold text-sm sm:text-base px-8 sm:px-12 py-4 rounded-full shadow-[0_0_35px_rgba(232,195,97,0.4)] hover:scale-105 transition-all btn-sheen flex items-center gap-2.5"
+                  >
+                    View All Results &amp; Verified Trades (10 Setups) <ArrowRight className="w-5 h-5" />
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          {/* Interactive Navigation Pills / Dots Bar */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-1">
+            <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto max-w-full pb-2 sm:pb-0 hide-scrollbar">
+              {[
+                { label: "01 · +£228k", sub: "Live MT5 Short" },
+                { label: "02 · +£50k", sub: "Supply Sell" },
+                { label: "03 · +£48k", sub: "London Impulse" },
+                { label: "04 · View All (10)", sub: "Vault" },
+              ].map((tab, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setActiveProofSlide(idx)}
+                  className={`px-4 sm:px-5 py-2.5 rounded-full font-cinzel text-xs font-bold transition-all whitespace-nowrap flex items-center gap-2 ${
+                    activeProofSlide === idx
+                      ? 'bg-gradient-to-r from-[#FFF5CE] via-[#E8C361] to-[#AA8222] text-black shadow-[0_0_20px_rgba(232,195,97,0.4)] scale-105'
+                      : 'bg-black/60 border border-white/15 text-zinc-300 hover:text-white hover:border-[#E8C361]/50'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-2 text-zinc-300 text-xs font-outfit">
+              <span className="sm:hidden">Swipe left/right to change setups</span>
+              <span className="hidden sm:inline">Use arrows or click pills to switch setups</span>
+            </div>
+          </div>
         </div>
 
         {/* ═══ WHY FREE ═══ */}
@@ -1366,11 +1680,11 @@ function Home() {
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
             <img src="/midas-logo.jpg" alt="" className="w-full max-w-[600px] object-contain rounded-full" />
           </div>
-          <p className="text-[12px] sm:text-[13px] text-[#d4af37] tracking-[0.2em] uppercase font-inter font-bold mb-3 sm:mb-4 relative z-10">NO CATCH</p>
-          <h2 className="font-playfair text-[32px] sm:text-[54px] font-black text-white leading-tight max-w-[800px] relative z-10 px-4">Why Is It <span className="text-[#d4af37]">Free?</span></h2>
-          <p className="text-[17px] sm:text-[24px] text-[#f9e7b9] font-playfair font-bold mt-3 sm:mt-4 mb-5 sm:mb-8 relative z-10 px-4">You are not buying signals. You are stealing them.</p>
-          <p className="text-zinc-100 font-inter font-medium text-[15px] sm:text-[17px] leading-relaxed max-w-[660px] mx-auto relative z-10 px-4">Most groups charge £200 a month for vague entries. We give ours away free because the Telegram is how we prove we are the real thing &mdash; before you ever spend a penny. Watch the trades. Watch the results. Then decide.</p>
-          <button onClick={() => handleTrackedLink('telegram_why_free', telegramLink)} className="mt-8 flex items-center gap-2 bg-gradient-to-br from-[#f9e7b9] to-[#d4af37] text-black text-[15px] sm:text-[16px] font-bold rounded-full px-8 py-3.5 sm:py-4 shadow-[0_0_30px_rgba(212,175,55,0.2)] relative z-10 btn-sheen">
+          <p className="text-[12px] sm:text-[13px] text-[#E8C361] tracking-[0.25em] uppercase font-cinzel font-bold mb-3 sm:mb-4 relative z-10">NO CATCH</p>
+          <h2 className="font-playfair text-[32px] sm:text-[54px] font-black text-white leading-tight max-w-[800px] relative z-10 px-4">Why Is It <span className="font-cinzel text-transparent bg-clip-text bg-gradient-to-r from-[#FFF8D8] via-[#E8C361] to-[#AA8222]">Free?</span></h2>
+          <p className="text-[17px] sm:text-[24px] text-transparent bg-clip-text bg-gradient-to-r from-[#FFF4CC] via-[#E8C361] to-[#C6A03F] font-playfair font-bold mt-3 sm:mt-4 mb-5 sm:mb-8 relative z-10 px-4">You are not buying signals. You are stealing them.</p>
+          <p className="text-zinc-100 font-outfit font-medium text-[15px] sm:text-[17px] leading-relaxed max-w-[660px] mx-auto relative z-10 px-4">Most groups charge £200 a month for vague entries. We give ours away free because the Telegram is how we prove we are the real thing &mdash; before you ever spend a penny. Watch the trades. Watch the results. Then decide.</p>
+          <button onClick={() => handleTrackedLink('telegram_why_free', telegramLink)} className="mt-8 flex items-center gap-2 bg-gradient-to-r from-[#FFF2BD] via-[#E8C361] to-[#AA8222] text-black text-[15px] sm:text-[16px] font-cinzel font-extrabold tracking-wider rounded-full px-8 py-3.5 sm:py-4 shadow-[0_0_30px_rgba(232,195,97,0.3)] relative z-10 btn-sheen">
             Join Free Telegram <ArrowRight className="w-4 h-4" />
           </button>
         </div>
@@ -1378,20 +1692,20 @@ function Home() {
         {/* ═══ REVIEWS ═══ */}
         <div id="reviews" className="mt-20 sm:mt-32 w-full max-w-[1200px] scroll-mt-24 sm:scroll-mt-32">
           <div className="flex flex-col items-center text-center mb-8 px-4">
-            <p className="text-[12px] sm:text-[13px] text-[#d4af37] tracking-[0.2em] uppercase font-inter font-bold mb-2 sm:mb-3">Real Talk</p>
-            <h2 className="font-playfair text-[28px] sm:text-[48px] font-black text-white leading-[1.1] mb-3 sm:mb-4">{reviewsData.length}+ Verified <span className="text-[#d4af37]">Reviews</span></h2>
-            <p className="text-zinc-200 font-inter font-medium text-[14px] sm:text-[16px] max-w-[500px]">Read unfiltered thoughts from traders inside the VIP. The good, the bad, and the extremely profitable.</p>
+            <p className="text-[12px] sm:text-[13px] text-[#E8C361] tracking-[0.25em] uppercase font-cinzel font-bold mb-2 sm:mb-3">Real Talk</p>
+            <h2 className="font-playfair text-[28px] sm:text-[48px] font-black text-white leading-[1.1] mb-3 sm:mb-4">{reviewsData.length}+ Verified <span className="font-cinzel text-transparent bg-clip-text bg-gradient-to-r from-[#FFF8D8] via-[#E8C361] to-[#AA8222]">Reviews</span></h2>
+            <p className="text-zinc-200 font-outfit font-medium text-[14px] sm:text-[16px] max-w-[500px]">Read unfiltered thoughts from traders inside the VIP. The good, the bad, and the extremely profitable.</p>
           </div>
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-3 sm:gap-4 mb-6 sm:mb-10 px-4">
             <div className="flex gap-2 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar max-w-[100vw] px-4 sm:px-0">
               {['ALL', 'POSITIVE', 'NEGATIVE'].map((tab) => (
-                <button key={tab} onClick={() => { setReviewTab(tab as ReviewTab); setReviewsExpanded(false); }} className={`px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-[12px] sm:text-[13px] font-bold font-inter transition-all whitespace-nowrap ${reviewTab === tab ? 'bg-[#d4af37] text-black shadow-[0_0_15px_rgba(212,175,55,0.4)]' : 'bg-white/10 text-zinc-200 hover:bg-white/15 hover:text-white'}`}>
+                <button key={tab} onClick={() => { setReviewTab(tab as ReviewTab); setReviewsExpanded(false); }} className={`px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-[12px] sm:text-[13px] font-cinzel font-bold transition-all whitespace-nowrap ${reviewTab === tab ? 'bg-gradient-to-r from-[#FFF5CE] via-[#E8C361] to-[#AA8222] text-black shadow-[0_0_15px_rgba(232,195,97,0.4)]' : 'bg-white/10 text-zinc-200 hover:bg-white/15 hover:text-white'}`}>
                   {tab === 'ALL' ? 'All Reviews' : tab === 'POSITIVE' ? 'Positive' : 'Mixed / Negative'}
                 </button>
               ))}
             </div>
-            <button onClick={() => setShowReviewForm(true)} className="px-5 sm:px-6 py-2.5 rounded-full text-[12px] sm:text-[13px] font-bold font-inter border border-[#d4af37] text-[#d4af37] hover:bg-[#d4af37]/10 transition-all flex items-center gap-2 whitespace-nowrap">Write a Review</button>
+            <button onClick={() => setShowReviewForm(true)} className="px-5 sm:px-6 py-2.5 rounded-full text-[12px] sm:text-[13px] font-cinzel font-bold border border-[#E8C361] text-[#E8C361] hover:bg-[#E8C361]/10 transition-all flex items-center gap-2 whitespace-nowrap">Write a Review</button>
           </div>
 
           {/* Review Form Modal */}
@@ -1399,14 +1713,14 @@ function Home() {
             <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4" onClick={(e) => { if (e.target === e.currentTarget) setShowReviewForm(false); }}>
               <div className="bg-[#0c0c0c] border border-white/20 rounded-2xl p-6 sm:p-8 max-w-md w-full relative animate-scale-in shadow-2xl">
                 <button onClick={() => setShowReviewForm(false)} className="absolute top-4 right-4 text-zinc-400 hover:text-white"><X /></button>
-                <h3 className="text-xl sm:text-2xl font-bold text-white mb-6">Leave a Review</h3>
+                <h3 className="text-xl sm:text-2xl font-cinzel font-bold text-white mb-6">Leave a Review</h3>
                 <form onSubmit={submitReview} className="flex flex-col gap-4">
                   <input required name="reviewName" type="text" placeholder="Your Name or Initials" className="bg-black border border-white/20 rounded-lg p-3 text-white text-sm font-medium" />
                   <select required name="reviewStars" className="bg-black border border-white/20 rounded-lg p-3 text-white text-sm font-medium">
                     <option value="5">5 Stars - Excellent</option><option value="4">4 Stars - Good</option><option value="3">3 Stars - Average</option><option value="2">2 Stars - Poor</option><option value="1">1 Star - Terrible</option>
                   </select>
                   <textarea required name="reviewText" rows={4} placeholder="Your honest experience..." className="bg-black border border-white/20 rounded-lg p-3 text-white text-sm font-medium resize-none"></textarea>
-                  <button type="submit" className="bg-[#d4af37] text-black font-bold rounded-lg py-3 hover:bg-[#f9e7b9] transition-colors mt-2 text-sm">Submit Review</button>
+                  <button type="submit" className="bg-gradient-to-r from-[#FFF2BD] via-[#E8C361] to-[#AA8222] text-black font-cinzel font-bold rounded-lg py-3 hover:scale-[1.02] transition-all mt-2 text-sm">Submit Review</button>
                 </form>
               </div>
             </div>
@@ -1415,12 +1729,12 @@ function Home() {
           {/* Reviews Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-4 sm:px-0">
             {displayedReviews.map((review, i) => (
-              <div key={review.id || i} className="bg-[#0c0c0c]/90 border border-white/15 rounded-2xl p-5 flex flex-col gap-2 hover:border-[#d4af37]/40 transition-colors shadow-lg">
+              <div key={review.id || i} className="bg-[#0c0c0c]/90 border border-white/15 rounded-2xl p-5 flex flex-col gap-2 hover:border-[#E8C361]/40 transition-colors shadow-lg">
                 <ReviewStars rating={review.stars} />
-                <p className="text-zinc-100 text-[14px] sm:text-[15px] leading-relaxed font-inter font-medium flex-1 italic mt-1">"{review.text}"</p>
+                <p className="text-zinc-100 text-[14px] sm:text-[15px] leading-relaxed font-outfit font-normal flex-1 italic mt-1">"{review.text}"</p>
                 {review.admin_response && (
-                  <div className="mt-2 bg-[#d4af37]/10 border border-[#d4af37]/20 rounded-lg p-3 relative">
-                    <span className="text-[#d4af37] text-[10px] font-bold uppercase tracking-widest block mb-1">Midas Response</span>
+                  <div className="mt-2 bg-[#E8C361]/10 border border-[#E8C361]/20 rounded-lg p-3 relative">
+                    <span className="text-[#E8C361] text-[10px] font-cinzel font-bold uppercase tracking-widest block mb-1">Midas Response</span>
                     <p className="text-white text-[12px] font-medium">{review.admin_response}</p>
                   </div>
                 )}
@@ -1433,7 +1747,7 @@ function Home() {
           </div>
           {!reviewsExpanded && filteredReviews.length > 12 && (
             <div className="flex justify-center mt-8">
-              <button onClick={() => setReviewsExpanded(true)} className="flex items-center gap-2 border border-[#d4af37]/50 text-[#d4af37] hover:bg-[#d4af37]/10 px-6 py-2.5 rounded-full text-[12px] sm:text-[13px] font-bold transition-colors">
+              <button onClick={() => setReviewsExpanded(true)} className="flex items-center gap-2 border border-[#E8C361]/50 text-[#E8C361] hover:bg-[#E8C361]/10 px-6 py-2.5 rounded-full text-[12px] sm:text-[13px] font-cinzel font-bold transition-colors">
                 Read all {filteredReviews.length} reviews <ChevronDown className="w-4 h-4" />
               </button>
             </div>
@@ -1443,8 +1757,8 @@ function Home() {
         {/* ═══ FAQ ═══ */}
         <div id="faq" className="mt-20 sm:mt-32 w-full max-w-[840px] mx-auto scroll-mt-24 sm:scroll-mt-32 border-t border-white/10 pt-12 sm:pt-20">
           <div className="text-center mb-8 sm:mb-12 px-4">
-            <p className="text-[12px] sm:text-[13px] text-[#d4af37] tracking-[0.2em] uppercase font-inter font-bold mb-2 sm:mb-3">Got Questions?</p>
-            <h2 className="font-playfair text-[28px] sm:text-[48px] font-black text-white leading-[1.1] mb-3 sm:mb-4">Frequently Asked <span className="text-[#d4af37]">Questions</span></h2>
+            <p className="text-[12px] sm:text-[13px] text-[#E8C361] tracking-[0.25em] uppercase font-cinzel font-bold mb-2 sm:mb-3">Got Questions?</p>
+            <h2 className="font-playfair text-[28px] sm:text-[48px] font-black text-white leading-[1.1] mb-3 sm:mb-4">Frequently Asked <span className="font-cinzel text-transparent bg-clip-text bg-gradient-to-r from-[#FFF8D8] via-[#E8C361] to-[#AA8222]">Questions</span></h2>
           </div>
           <div className="bg-[#0c0c0c]/90 border border-white/15 rounded-2xl p-5 sm:p-8 mx-4 sm:mx-0 shadow-xl">
             {faqsData.map((faq, i) => <FAQItem key={i} question={faq.question} answer={faq.answer} />)}
