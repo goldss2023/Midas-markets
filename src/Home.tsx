@@ -131,11 +131,20 @@ const DEFAULT_FAQS = [
   }
 ];
 
+// Helper to guarantee resilient media URLs without redundant double slashes
+function getProofUrl(filename?: string): string {
+  if (!filename) return '/midas-logo.jpg';
+  if (filename.startsWith('http')) return filename;
+  if (filename.startsWith('/proofs/')) return filename;
+  if (filename.startsWith('/')) return filename;
+  return `/proofs/${filename}`;
+}
+
 // ─── Proof Card ───
 function ProofCard({ filename, title, subtitle, badge, isRed, details, onOpenLightbox }: any) {
   const [expanded, setExpanded] = useState(false);
   const isVideo = filename?.toLowerCase().endsWith('.mp4');
-  const mediaSrc = filename?.startsWith('http') ? filename : `/proofs/${filename}`;
+  const mediaSrc = getProofUrl(filename);
 
   return (
     <div className="bg-[#0c0c0c]/95 border border-white/15 rounded-2xl sm:rounded-3xl p-5 sm:p-6 flex flex-col gap-4 group hover:border-[#d4af37]/50 shadow-2xl transition-all duration-300 backdrop-blur-md">
@@ -148,6 +157,8 @@ function ProofCard({ filename, title, subtitle, badge, isRed, details, onOpenLig
             src={mediaSrc} 
             controls 
             playsInline 
+            {...{ 'webkit-playsinline': 'true', 'x5-playsinline': 'true' }}
+            preload="metadata"
             poster="/proofs/video_frame_thumb.jpg"
             className="w-full h-full max-h-[340px] object-contain rounded-lg" 
           />
@@ -390,6 +401,7 @@ function Home() {
   const [navScrolled, setNavScrolled] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== 'undefined' ? window.innerWidth < 768 : false);
+  const [videoPlaying, setVideoPlaying] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
   // Fallback data in case backend hasn't initialized yet
@@ -401,17 +413,73 @@ function Home() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  const isAnyModalOpen = vipModalOpen || socialModalOpen || communityModalOpen || allProofsModalOpen || !!lightboxMedia || showReviewForm || menuOpen;
   useEffect(() => {
+    if (isAnyModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isAnyModalOpen]);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setVipModalOpen(false);
+        setSocialModalOpen(false);
+        setCommunityModalOpen(false);
+        setAllProofsModalOpen(false);
+        setLightboxMedia(null);
+        setShowReviewForm(false);
+        setMenuOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  useEffect(() => {
+    let active = true;
     const playVideo = () => {
-      if (videoRef.current) {
+      if (videoRef.current && active) {
         videoRef.current.defaultMuted = true;
         videoRef.current.muted = true;
-        videoRef.current.play().catch(() => {});
+        const p = videoRef.current.play();
+        if (p && typeof p.catch === 'function') {
+          p.then(() => {
+            if (active) setVideoPlaying(true);
+          }).catch(() => {
+            // Autoplay restricted (e.g. Low Power Mode). Poster remains beautifully displayed.
+          });
+        }
       }
     };
     playVideo();
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible' && videoRef.current && videoRef.current.paused) {
+        playVideo();
+      }
+    };
+
+    const handlePageShow = (_e: PageTransitionEvent) => {
+      if (videoRef.current && videoRef.current.paused) {
+        playVideo();
+      }
+    };
+
     window.addEventListener('touchstart', playVideo, { once: true, passive: true });
-    return () => window.removeEventListener('touchstart', playVideo);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('pageshow', handlePageShow);
+    return () => {
+      active = false;
+      window.removeEventListener('touchstart', playVideo);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('pageshow', handlePageShow);
+    };
   }, [isMobile]);
 
   const handleVideoTimeUpdate = () => {
@@ -423,23 +491,47 @@ function Home() {
   };
 
   useEffect(() => {
-    // Fetch all dynamic data
-    Promise.all([
-      fetch(`${API}/reviews`).then(r => r.json()),
-      fetch(`${API}/proofs`).then(r => r.json()),
-      fetch(`${API}/faqs`).then(r => r.json()),
-      fetch(`${API}/settings`).then(r => r.json())
-    ]).then(([revData, prfData, faqData, setData]) => {
-      if (revData.reviews) setReviewsData(revData.reviews);
-      if (prfData.proofs) setProofsData(prfData.proofs);
-      if (faqData.faqs) setFaqsData(faqData.faqs);
-      
-      const stgs: any = {};
-      if (setData.settings) {
-        setData.settings.forEach((s: any) => stgs[s.key] = s.value);
+    let unmounted = false;
+    const fetchSafe = async (url: string) => {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        return await res.json();
+      } catch {
+        return null;
       }
-      setSettings(stgs);
-    }).catch(console.error);
+    };
+
+    Promise.all([
+      fetchSafe(`${API}/reviews`),
+      fetchSafe(`${API}/proofs`),
+      fetchSafe(`${API}/faqs`),
+      fetchSafe(`${API}/settings`)
+    ]).then(([revData, prfData, faqData, setData]) => {
+      if (unmounted) return;
+      if (revData?.reviews && Array.isArray(revData.reviews) && revData.reviews.length > 0) {
+        setReviewsData(revData.reviews);
+      }
+      if (prfData?.proofs && Array.isArray(prfData.proofs) && prfData.proofs.length > 0) {
+        setProofsData(prfData.proofs);
+      }
+      if (faqData?.faqs && Array.isArray(faqData.faqs) && faqData.faqs.length > 0) {
+        setFaqsData(faqData.faqs);
+      }
+      if (setData?.settings && Array.isArray(setData.settings)) {
+        const stgs: any = {};
+        setData.settings.forEach((s: any) => {
+          if (s && s.key) stgs[s.key] = s.value;
+        });
+        setSettings(stgs);
+      }
+    }).catch(() => {
+      // Never disrupt hydration or page rendering
+    });
+
+    return () => {
+      unmounted = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -585,27 +677,49 @@ function Home() {
   return (
     <div className="relative w-full min-h-screen overflow-x-hidden bg-[#050505] text-white selection:bg-[#d4af37]/30 pb-20 md:pb-0">
       
-      {/* ─── Background Video ─── */}
-      {/* Drastically reduced scroll opacity to ~15% on mobile and ~10% on desktop so text is 100% readable */}
-      <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
+      {/* ─── Background Layer with Instant Lightweight Poster & Smooth Video Transition ─── */}
+      <div className="fixed inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden bg-[#050505]">
+        {/* Instant Lightweight Poster (Zero-latency visual fallback for Low Power Mode / cold load) */}
+        <img
+          src="/bg-poster.webp"
+          alt=""
+          fetchPriority="high"
+          decoding="async"
+          className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-30 transition-opacity duration-500"
+        />
+
+        {/* Optimized Video: non-blocking, no mix-blend-screen on mobile, zero GPU compositor freeze */}
         <video 
-          ref={videoRef}
+          ref={(el) => {
+            if (el) {
+              el.defaultMuted = true;
+              el.muted = true;
+            }
+            videoRef.current = el;
+          }}
           src={isMobile ? "/bg-video-mobile.mp4" : "/bg-video.mp4"}
           poster="/bg-poster.webp"
-          preload="auto"
+          preload="metadata"
           autoPlay 
           muted 
           playsInline 
+          {...{ 'webkit-playsinline': 'true', 'x5-playsinline': 'true' }}
           onTimeUpdate={handleVideoTimeUpdate}
+          onPlaying={() => setVideoPlaying(true)}
+          onError={() => setVideoPlaying(false)}
           onEnded={() => {
             if (videoRef.current) {
               videoRef.current.currentTime = 2.83;
               videoRef.current.play().catch(() => {});
             }
           }}
-          className={`w-full h-full object-cover md:scale-110 mix-blend-screen pointer-events-none transition-opacity duration-500 ease-out ${isScrolled ? 'opacity-20 md:opacity-15' : 'opacity-35 md:opacity-25'}`} 
+          className={`w-full h-full object-cover md:scale-110 md:mix-blend-screen pointer-events-none transition-opacity duration-700 ease-out ${
+            videoPlaying ? (isScrolled ? 'opacity-20 md:opacity-15' : 'opacity-35 md:opacity-25') : 'opacity-0'
+          }`} 
         />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] bg-[#d4af37]/15 rounded-full blur-[140px] pointer-events-none"></div>
+
+        {/* Ambient Glow: CSS radial gradient on mobile (0ms GPU cost) & blur on desktop */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] bg-[radial-gradient(circle,rgba(212,175,55,0.18)_0%,transparent_70%)] md:bg-[#d4af37]/15 rounded-full md:blur-[140px] pointer-events-none"></div>
       </div>
 
       {/* Floating Section Navigation (Desktop only) */}
@@ -684,7 +798,7 @@ function Home() {
 
           {/* Mobile Three Dots Menu Trigger */}
           <button 
-            className="flex md:hidden items-center justify-center w-10 h-10 rounded-full bg-black/80 border border-[#d4af37]/40 text-[#d4af37] hover:text-white hover:border-[#d4af37] transition-all shadow-[0_0_15px_rgba(212,175,55,0.2)]" 
+            className="flex md:hidden items-center justify-center w-11 h-11 rounded-full bg-black/80 border border-[#d4af37]/40 text-[#d4af37] hover:text-white hover:border-[#d4af37] transition-all shadow-[0_0_15px_rgba(212,175,55,0.2)]" 
             onClick={() => setMenuOpen(true)} 
             aria-label="Open menu"
           >
@@ -821,7 +935,7 @@ function Home() {
       {/* ─── VIP MODAL / DRAWER (Found via the Three Dots) ─── */}
       {vipModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in" onClick={(e) => { if (e.target === e.currentTarget) setVipModalOpen(false); }}>
-          <div className="bg-[#0c0c0c] border border-[#d4af37]/40 rounded-3xl p-6 sm:p-10 max-w-3xl w-full relative max-h-[92vh] overflow-y-auto shadow-2xl">
+          <div className="bg-[#0c0c0c] border border-[#d4af37]/40 rounded-3xl p-6 sm:p-10 max-w-3xl w-full relative max-h-[92vh] max-h-[92dvh] overflow-y-auto shadow-2xl">
             <button 
               onClick={() => setVipModalOpen(false)} 
               className="absolute top-5 right-5 text-zinc-400 hover:text-white bg-white/5 p-2 rounded-full border border-white/10"
@@ -1003,7 +1117,7 @@ function Home() {
       {/* ─── SOCIAL MEDIA MODAL (Found via the Three Dots) ─── */}
       {socialModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto animate-fade-in" onClick={(e) => { if (e.target === e.currentTarget) setSocialModalOpen(false); }}>
-          <div className="bg-[#0c0c0c] border border-white/20 rounded-3xl p-6 sm:p-8 max-w-xl w-full relative shadow-2xl">
+          <div className="bg-[#0c0c0c] border border-white/20 rounded-3xl p-6 sm:p-8 max-w-xl w-full relative shadow-2xl max-h-[90vh] max-h-[90dvh] overflow-y-auto">
             <button 
               onClick={() => setSocialModalOpen(false)} 
               className="absolute top-5 right-5 text-zinc-400 hover:text-white bg-white/5 p-2 rounded-full border border-white/10"
@@ -1109,7 +1223,7 @@ function Home() {
       {/* ─── COMMUNITY HUB MODAL: STAY AHEAD & SUGGESTIONS (Accessed via Three Dots) ─── */}
       {communityModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in" onClick={(e) => { if (e.target === e.currentTarget) setCommunityModalOpen(false); }}>
-          <div className="bg-[#0c0c0c] border border-[#d4af37]/40 rounded-3xl p-6 sm:p-10 max-w-xl w-full relative shadow-2xl">
+          <div className="bg-[#0c0c0c] border border-[#d4af37]/40 rounded-3xl p-6 sm:p-10 max-w-xl w-full relative shadow-2xl max-h-[92vh] max-h-[92dvh] overflow-y-auto">
             <button 
               onClick={() => setCommunityModalOpen(false)} 
               className="absolute top-5 right-5 text-zinc-400 hover:text-white bg-white/5 p-2 rounded-full border border-white/10"
@@ -1240,7 +1354,7 @@ function Home() {
           className="fixed inset-0 z-50 bg-black/95 backdrop-blur-md flex items-center justify-center p-3 sm:p-6 animate-fade-in"
           onClick={() => setLightboxMedia(null)}
         >
-          <div className="relative max-w-4xl max-h-[90vh] flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
+          <div className="relative max-w-4xl max-h-[90vh] max-h-[90dvh] flex flex-col items-center justify-center" onClick={(e) => e.stopPropagation()}>
             <button 
               onClick={() => setLightboxMedia(null)} 
               className="absolute -top-12 right-0 text-white hover:text-[#d4af37] bg-white/10 p-2 rounded-full border border-white/20"
@@ -1254,13 +1368,17 @@ function Home() {
                 controls 
                 autoPlay 
                 playsInline
-                className="max-w-full max-h-[85vh] rounded-2xl border border-white/20 shadow-2xl" 
+                preload="metadata"
+                poster="/proofs/video_frame_thumb.jpg"
+                {...{ 'webkit-playsinline': 'true', 'x5-playsinline': 'true' }}
+                className="max-w-full max-h-[85vh] max-h-[85dvh] rounded-2xl border border-white/20 shadow-2xl" 
               />
             ) : (
               <img 
                 src={lightboxMedia.src} 
                 alt={lightboxMedia.title || "Verified trade"} 
-                className="max-w-full max-h-[85vh] object-contain rounded-2xl border border-white/20 shadow-2xl" 
+                onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/midas-logo.jpg'; }}
+                className="max-w-full max-h-[85vh] max-h-[85dvh] object-contain rounded-2xl border border-white/20 shadow-2xl" 
               />
             )}
             {lightboxMedia.title && (
@@ -1278,7 +1396,7 @@ function Home() {
           className="fixed inset-0 z-50 bg-black/90 backdrop-blur-xl flex items-center justify-center p-3 sm:p-6 overflow-y-auto animate-fade-in" 
           onClick={(e) => { if (e.target === e.currentTarget) setAllProofsModalOpen(false); }}
         >
-          <div className="bg-[#0a0a0a] border border-[#E8C361]/35 rounded-3xl p-5 sm:p-8 md:p-10 max-w-5xl w-full relative my-auto shadow-[0_0_60px_rgba(0,0,0,0.95)] max-h-[92vh] overflow-y-auto hide-scrollbar">
+          <div className="bg-[#0a0a0a] border border-[#E8C361]/35 rounded-3xl p-5 sm:p-8 md:p-10 max-w-5xl w-full relative my-auto shadow-[0_0_60px_rgba(0,0,0,0.95)] max-h-[92vh] max-h-[92dvh] overflow-y-auto hide-scrollbar">
             <button 
               onClick={() => setAllProofsModalOpen(false)} 
               className="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 text-zinc-300 hover:text-white flex items-center justify-center transition-colors border border-white/15"
@@ -1342,17 +1460,17 @@ function Home() {
             Live signals &middot; 1,400+ traders inside
           </div>
 
-          <h1 className="font-playfair font-normal text-white leading-[1.14] sm:leading-[1.08] tracking-[-0.01em]" style={{ fontSize: 'clamp(42px, 8.5vw, 92px)' }}>
+          <h1 className="font-playfair font-normal text-white leading-[1.14] sm:leading-[1.08] tracking-[-0.01em]" style={{ fontSize: 'clamp(34px, 8vw, 92px)' }}>
             Turn Market Liquidity <br className="hidden sm:inline" />
             Into <span className="font-cinzel font-black tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-[#FFF8DB] via-[#E8C361] to-[#9C751E] drop-shadow-[0_4px_24px_rgba(232,195,97,0.5)]">Pure Gold.</span>
           </h1>
 
           {/* Bold, high-contrast text separated by large editorial gap */}
-          <p className="mt-16 sm:mt-24 md:mt-28 text-[17px] sm:text-[21px] leading-[1.65] text-white max-w-[720px] font-outfit font-semibold">
+          <p className="mt-4 sm:mt-20 md:mt-28 text-[15px] sm:text-[21px] leading-[1.5] sm:leading-[1.65] text-white max-w-[720px] font-outfit font-semibold">
             We trade 20 forex pairs including gold. Clean analysis. Elite risk-to-reward. <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF4CC] via-[#E8C361] to-[#BA902C] font-bold font-outfit">4 weeks straight without a stop loss.</span>
           </p>
 
-          <p className="mt-4 sm:mt-6 text-[15px] sm:text-[17px] leading-[1.75] text-zinc-100 max-w-[680px] font-outfit font-medium">
+          <p className="mt-4 sm:mt-6 text-[15px] sm:text-[17px] leading-[1.75] text-zinc-100 max-w-[680px] font-outfit font-medium hidden sm:block">
             Midas Markets is a live trading operation you get to watch in real time. Every day we post full chart breakdowns, show exactly why we enter, and share verified proof. No guessing. No recycled ideas. Just clean trades that print.
             <br/><br/>
             <strong className="text-white font-bold">Do we occasionally hit stop loss? Yes.</strong> Every real trader does. But we always recover &mdash; tighter, faster, and more precise than before. That is the journey.
@@ -1372,17 +1490,37 @@ function Home() {
           </div>
           
           {/* Mobile CTA */}
-          <div className="mt-6 md:hidden w-full flex flex-col gap-3">
-             <button onClick={() => handleTrackedLink('telegram_hero_mobile', telegramLink)} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#FFF2BC] via-[#E8C361] to-[#AA8222] text-black text-[15px] font-cinzel font-extrabold tracking-wider rounded-full px-5 py-3.5 btn-sheen shadow-lg">
+          <div className="mt-4 md:hidden w-full flex flex-col gap-2.5">
+             <button onClick={() => handleTrackedLink('telegram_hero_mobile', telegramLink)} className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-[#FFF2BC] via-[#E8C361] to-[#AA8222] text-black text-[15px] font-cinzel font-extrabold tracking-wider rounded-full px-5 py-3 btn-sheen shadow-lg">
                 Join Free on Telegram <ArrowRight className="w-4 h-4" />
              </button>
-             <button onClick={() => setSocialModalOpen(true)} className="w-full flex items-center justify-center border border-white/20 text-white text-[14px] font-outfit font-semibold rounded-full px-5 py-3 hover:bg-white/5 transition-colors">
+             <button onClick={() => setSocialModalOpen(true)} className="w-full flex items-center justify-center border border-white/20 text-white text-[13px] font-outfit font-semibold rounded-full px-4 py-2 hover:bg-white/5 transition-colors">
                 Official Social Media Hub
              </button>
           </div>
 
-          {/* Stats Bar */}
-          <div className="mt-10 sm:mt-14 flex gap-4 sm:gap-12 flex-wrap w-full bg-black/50 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-md shadow-2xl">
+          {/* Mobile Compact Stats Bar */}
+          <div className="mt-4 flex md:hidden justify-between items-center w-full bg-black/60 border border-white/10 rounded-xl p-3 backdrop-blur-md">
+            <div className="flex flex-col items-center flex-1 border-r border-white/10">
+              <div className="font-cinzel text-[16px] font-black text-[#E8C361]">1,400+</div>
+              <div className="text-[9px] tracking-[0.15em] uppercase text-zinc-300 font-cinzel font-bold">Members</div>
+            </div>
+            <div className="flex flex-col items-center flex-1 border-r border-white/10">
+              <div className="font-cinzel text-[16px] font-black text-[#E8C361]">20</div>
+              <div className="text-[9px] tracking-[0.15em] uppercase text-zinc-300 font-cinzel font-bold">Pairs</div>
+            </div>
+            <div className="flex flex-col items-center flex-1 border-r border-white/10">
+              <div className="font-cinzel text-[16px] font-black text-[#E8C361]">1:3.4</div>
+              <div className="text-[9px] tracking-[0.15em] uppercase text-zinc-300 font-cinzel font-bold">Avg RR</div>
+            </div>
+            <div className="flex flex-col items-center flex-1">
+              <div className="font-cinzel text-[16px] font-black text-[#E8C361] flex items-center gap-1">4.5 <Star className="w-3 h-3 fill-[#E8C361]" /></div>
+              <div className="text-[9px] tracking-[0.15em] uppercase text-zinc-300 font-cinzel font-bold">Rating</div>
+            </div>
+          </div>
+
+          {/* Desktop Stats Bar */}
+          <div className="mt-10 sm:mt-14 hidden md:flex gap-4 sm:gap-12 flex-wrap w-full bg-black/50 border border-white/10 rounded-2xl p-5 sm:p-6 backdrop-blur-md shadow-2xl">
             {[
               { val: "1,400+", label: "Members" },
               { val: "20", label: "Pairs Traded" },
@@ -1402,8 +1540,8 @@ function Home() {
           </div>
         </div>
 
-        {/* ═══ ELEGANT SECTION II BREAK (Ample Spacing to feel like a new page) ═══ */}
-        <div className="w-full flex flex-col items-center justify-center my-32 sm:my-48 md:my-60 relative">
+        {/* ═══ ELEGANT SECTION II BREAK ═══ */}
+        <div className="w-full flex flex-col items-center justify-center my-6 sm:my-32 md:my-48 relative">
           <div className="w-full max-w-[840px] h-[1px] bg-gradient-to-r from-transparent via-[#E8C361]/40 to-transparent" />
           <div className="absolute bg-[#050505] px-6 sm:px-8 py-2 sm:py-2.5 rounded-full border border-[#E8C361]/40 text-[11px] sm:text-[12px] font-cinzel font-bold text-[#E8C361] tracking-[0.28em] uppercase shadow-[0_0_30px_rgba(232,195,97,0.22)] flex items-center gap-2">
             <span>Verified Execution Records</span>
@@ -1477,15 +1615,16 @@ function Home() {
                       <div className="lg:col-span-7 flex flex-col">
                         <div 
                           onClick={() => setLightboxMedia({ 
-                            src: proof.filename.startsWith('http') ? proof.filename : `/proofs/${proof.filename}`, 
-                            isVideo: false, 
+                            src: getProofUrl(proof.filename), 
+                            isVideo: proof.filename?.toLowerCase().endsWith('.mp4'), 
                             title: proof.title 
                           })}
                           className="relative w-full rounded-xl sm:rounded-2xl bg-black border border-white/10 overflow-hidden cursor-pointer group/zoom flex items-center justify-center min-h-[260px] sm:min-h-[340px] md:min-h-[400px] max-h-[460px] p-2 sm:p-3"
                         >
                           <img 
-                            src={proof.filename.startsWith('http') ? proof.filename : `/proofs/${proof.filename}`} 
+                            src={getProofUrl(proof.filename)} 
                             alt={proof.title}
+                            onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/midas-logo.jpg'; }}
                             className="w-full h-full max-h-[420px] object-contain rounded-lg sm:rounded-xl transition-transform duration-500 group-hover/zoom:scale-[1.02]"
                             loading="eager"
                           />
@@ -1617,7 +1756,12 @@ function Home() {
                             </div>
                           </div>
                         ) : (
-                          <img src={p.filename.startsWith('http') ? p.filename : `/proofs/${p.filename}`} alt="" className="w-full h-full object-cover" />
+                          <img 
+                            src={getProofUrl(p.filename)} 
+                            alt={p.title || "Verified setup"} 
+                            onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/midas-logo.jpg'; }}
+                            className="w-full h-full object-cover" 
+                          />
                         )}
                       </div>
                     ))}
@@ -1672,6 +1816,15 @@ function Home() {
           </div>
         </div>
 
+        {/* Mobile Trading Philosophy & Recovery Card (Shown right below verified execution records) */}
+        <div className="w-full max-w-[1200px] mt-6 sm:hidden p-5 bg-[#080808]/90 border border-white/10 rounded-2xl text-left">
+          <p className="text-[13.5px] leading-[1.65] text-zinc-200 font-outfit">
+            Midas Markets is a live trading operation you get to watch in real time. Every day we post full chart breakdowns, show exactly why we enter, and share verified proof. No guessing. No recycled ideas. Just clean trades that print.
+            <br/><br/>
+            <strong className="text-white font-bold">Do we occasionally hit stop loss? Yes.</strong> Every real trader does. But we always recover &mdash; tighter, faster, and more precise than before. That is the journey.
+          </p>
+        </div>
+
         {/* ═══ WHY FREE ═══ */}
         <div id="why-free" className="mt-20 sm:mt-32 w-full flex flex-col items-center justify-center text-center py-12 sm:py-20 relative border-t border-white/10 scroll-mt-24 sm:scroll-mt-32">
           <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none">
@@ -1707,8 +1860,8 @@ function Home() {
 
           {/* Review Form Modal */}
           {showReviewForm && (
-            <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4" onClick={(e) => { if (e.target === e.currentTarget) setShowReviewForm(false); }}>
-              <div className="bg-[#0c0c0c] border border-white/20 rounded-2xl p-6 sm:p-8 max-w-md w-full relative animate-scale-in shadow-2xl">
+            <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto" onClick={(e) => { if (e.target === e.currentTarget) setShowReviewForm(false); }}>
+              <div className="bg-[#0c0c0c] border border-white/20 rounded-2xl p-6 sm:p-8 max-w-md w-full relative animate-scale-in shadow-2xl max-h-[90dvh] overflow-y-auto">
                 <button onClick={() => setShowReviewForm(false)} className="absolute top-4 right-4 text-zinc-400 hover:text-white"><X /></button>
                 <h3 className="text-xl sm:text-2xl font-cinzel font-bold text-white mb-6">Leave a Review</h3>
                 <form onSubmit={submitReview} className="flex flex-col gap-4">

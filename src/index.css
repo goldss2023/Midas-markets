@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
 @theme {
-  --font-inter: "Inter", sans-serif;
-  --font-playfair: "Playfair Display", serif;
-  --font-cinzel: "Cinzel", serif;
-  --font-outfit: "Outfit", sans-serif;
+  --font-inter: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-playfair: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-cinzel: "Cinzel", "Times New Roman", Georgia, serif;
+  --font-outfit: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --color-gold: #E8C361;
   --color-gold-dark: #C6A03F;
 }
@@ -43,19 +43,19 @@ html {
 
 
   .font-inter {
-    font-family: "Inter", sans-serif;
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
   .font-playfair {
-    font-family: "Playfair Display", serif;
+    font-family: "Playfair Display", Georgia, "Times New Roman", serif;
   }
 
   .font-cinzel {
-    font-family: "Cinzel", serif;
+    font-family: "Cinzel", "Times New Roman", Georgia, serif;
   }
 
   .font-outfit {
-    font-family: "Outfit", sans-serif;
+    font-family: "Outfit", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   }
 
   .gold-gradient-text {

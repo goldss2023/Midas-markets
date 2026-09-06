@@ -111,7 +111,7 @@ function Admin() {
       await fetch(`${API}/admin/proofs`, { method: 'POST', body: formData });
       setProofFile(null); setProofTitle(''); setProofSubtitle(''); setProofDetails(''); setProofBadge(''); setProofIsRed(false);
       fetchData();
-    } catch (err) { alert('Upload failed'); }
+    } catch { alert('Upload failed'); }
     finally { setUploadingProof(false); }
   };
 
@@ -221,7 +221,12 @@ function Admin() {
               <div className="flex flex-col gap-4 max-h-[600px] overflow-y-auto">
                 {proofs.map(p => (
                   <div key={p.id} className="bg-white/5 border border-white/10 rounded-lg p-3 flex gap-4">
-                    <img src={`/proofs/${p.filename}`} alt="" className="w-24 h-24 object-cover rounded bg-black" />
+                    <img 
+                      src={p.filename?.startsWith('http') ? p.filename : (p.filename?.startsWith('/proofs/') ? p.filename : (p.filename ? `/proofs/${p.filename}` : '/midas-logo.jpg'))} 
+                      alt={p.title || "Proof"} 
+                      onError={(e) => { (e.currentTarget as HTMLImageElement).src = '/midas-logo.jpg'; }}
+                      className="w-24 h-24 object-cover rounded bg-black" 
+                    />
                     <div className="flex-1">
                       <h4 className="font-bold text-sm">{p.title}</h4>
                       <p className="text-xs text-white/50 mt-1">{p.subtitle}</p>

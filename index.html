@@ -21,43 +21,111 @@
     <meta name="twitter:description" content="Free forex signals. 1,400+ traders. 20 pairs. Verified proof." />
     
     <!-- Theme Color -->
-    <meta name="theme-color" content="#d4af37" />
+    <meta name="theme-color" content="#050505" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     
-    <!-- Critical Asset Preloads for Instant Mobile Paint -->
+    <!-- Critical Asset Preloads for Instant Mobile Paint (<500ms) -->
     <link rel="preload" as="image" href="/bg-poster.webp" type="image/webp" fetchpriority="high" />
+    <link rel="preload" as="image" href="/midas-logo.jpg" type="image/jpeg" fetchpriority="high" />
+    <link rel="preload" as="image" href="/proofs/photo_5942833990374985878_y.jpg" type="image/jpeg" />
 
-    <!-- Google Fonts: Cinzel, Outfit, Inter, and Playfair Display (Non-blocking for Instant Paint) -->
+    <!-- Google Fonts: Non-blocking with display=swap & optimized weights -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" media="print" onload="this.media='all'">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@400;700;900&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@400;700;900&display=swap" media="print" onload="this.media='all'">
     <noscript>
-      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Inter:wght@400;500;600;700;800&family=Outfit:wght@500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:wght@400;700;900&display=swap">
     </noscript>
   </head>
-  <body style="background-color: #050505; color: #ffffff; margin: 0; padding: 0;">
+  <body style="background-color: #050505; color: #ffffff; margin: 0; padding: 0; -webkit-font-smoothing: antialiased;">
     <div id="root">
-      <!-- Instant First Paint (Replaced immediately by React on load) -->
-      <div style="min-height: 100vh; background-color: #050505; color: #ffffff; display: flex; flex-direction: column; align-items: flex-start; padding: 24px 20px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; box-sizing: border-box;">
-        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 28px;">
-          <img src="/midas-logo.jpg" alt="Midas Markets" style="width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgba(212,175,55,0.4);" />
-          <span style="font-size: 20px; font-weight: 800; letter-spacing: 0.15em; color: #ffffff;">MIDAS <span style="color: #E8C361;">MARKETS</span></span>
+      <!-- Instant First Paint (Zero Black Screen, Instant Visual Under 500ms) -->
+      <div style="min-height: 100vh; min-height: 100dvh; background-color: #050505; background-image: radial-gradient(circle at 50% 20%, rgba(212,175,55,0.12) 0%, transparent 60%); color: #ffffff; display: flex; flex-direction: column; align-items: flex-start; padding: 20px 18px; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; box-sizing: border-box; position: relative;">
+        <!-- Instant Background Poster for Zero-Latency First Visual Paint -->
+        <div style="position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;">
+          <img src="/bg-poster.webp" alt="" width="100%" height="100%" style="position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.3;" />
         </div>
-        <div style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(232,195,97,0.3); border-radius: 9999px; padding: 6px 14px; background: rgba(0,0,0,0.6); font-size: 12px; margin-bottom: 20px;">
+        
+        <!-- Header -->
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+          <img src="/midas-logo.jpg" alt="Midas Markets" width="40" height="40" style="width: 40px; height: 40px; border-radius: 50%; border: 1px solid rgba(212,175,55,0.4);" />
+          <span style="font-size: 19px; font-weight: 800; letter-spacing: 0.15em; color: #ffffff;">MIDAS <span style="color: #E8C361;">MARKETS</span></span>
+        </div>
+
+        <!-- Live Badge -->
+        <div style="display: inline-flex; align-items: center; gap: 8px; border: 1px solid rgba(232,195,97,0.3); border-radius: 9999px; padding: 5px 12px; background: rgba(0,0,0,0.6); font-size: 12px; margin-bottom: 16px;">
           <span style="width: 8px; height: 8px; border-radius: 50%; background: #10B981; display: inline-block;"></span>
           <span style="color: #ffffff; font-weight: 600;">Live signals &middot; 1,400+ traders inside</span>
         </div>
-        <h1 style="font-size: clamp(38px, 9vw, 56px); font-weight: 900; line-height: 1.1; margin: 0 0 24px 0; color: #ffffff;">
+
+        <!-- Headline -->
+        <h1 style="font-size: clamp(32px, 8vw, 56px); font-weight: 900; line-height: 1.1; margin: 0 0 16px 0; color: #ffffff; letter-spacing: -0.01em;">
           Turn Market Liquidity <br />
           Into <span style="color: #E8C361;">Pure Gold.</span>
         </h1>
-        <p style="font-size: 16px; line-height: 1.6; color: #e4e4e7; max-width: 600px; margin: 0 0 28px 0;">
+
+        <!-- Subheadline -->
+        <p style="font-size: 15px; line-height: 1.5; color: #e4e4e7; max-width: 600px; margin: 0 0 16px 0;">
           We trade 20 forex pairs including gold. Clean analysis. Elite risk-to-reward. 4 weeks straight without a stop loss.
         </p>
-        <div style="background: linear-gradient(135deg, #FFF2BC, #E8C361, #AA8222); color: #000000; font-weight: 800; font-size: 15px; border-radius: 9999px; padding: 14px 28px; display: inline-block;">
-          Join Free on Telegram &rarr;
+
+        <!-- CTA Buttons (Synchronized with Home.tsx mobile layout) -->
+        <div style="width: 100%; max-width: 600px; display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
+          <div style="background: linear-gradient(135deg, #FFF2BC, #E8C361, #AA8222); color: #000000; font-weight: 800; font-size: 15px; border-radius: 9999px; padding: 12px 24px; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 0 20px rgba(232,195,97,0.3);">
+            Join Free on Telegram &rarr;
+          </div>
+          <div style="border: 1px solid rgba(255,255,255,0.2); color: #ffffff; font-weight: 600; font-size: 13px; border-radius: 9999px; padding: 8px 16px; display: flex; align-items: center; justify-content: center;">
+            Official Social Media Hub
+          </div>
         </div>
+
+        <!-- Stats Row -->
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 600px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; padding: 10px 14px; margin-bottom: 16px; box-sizing: border-box;">
+          <div style="text-align: center; flex: 1; border-right: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-size: 15px; font-weight: 900; color: #E8C361;">1,400+</div>
+            <div style="font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #d4d4d8; font-weight: 700;">Members</div>
+          </div>
+          <div style="text-align: center; flex: 1; border-right: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-size: 15px; font-weight: 900; color: #E8C361;">20</div>
+            <div style="font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #d4d4d8; font-weight: 700;">Pairs</div>
+          </div>
+          <div style="text-align: center; flex: 1; border-right: 1px solid rgba(255,255,255,0.1);">
+            <div style="font-size: 15px; font-weight: 900; color: #E8C361;">1:3.4</div>
+            <div style="font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #d4d4d8; font-weight: 700;">Avg RR</div>
+          </div>
+          <div style="text-align: center; flex: 1;">
+            <div style="font-size: 15px; font-weight: 900; color: #E8C361;">4.5 &#9733;</div>
+            <div style="font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: #d4d4d8; font-weight: 700;">Rating</div>
+          </div>
+        </div>
+
+        <!-- Section II Break (Synchronized with Home.tsx) -->
+        <div style="width: 100%; max-width: 600px; display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 16px 0 20px 0; position: relative;">
+          <div style="width: 100%; height: 1px; background: linear-gradient(to right, transparent, rgba(232,195,97,0.4), transparent);"></div>
+          <div style="position: absolute; background: #050505; padding: 4px 16px; border-radius: 9999px; border: 1px solid rgba(232,195,97,0.4); font-size: 10px; font-weight: 700; color: #E8C361; letter-spacing: 0.25em; text-transform: uppercase;">
+            Verified Execution Records
+          </div>
+        </div>
+
+        <!-- Verified Results Carousel Preview (Rendered immediately without touching or scrolling) -->
+        <div style="width: 100%; max-width: 600px;">
+          <div style="font-size: 11px; font-weight: 700; letter-spacing: 0.25em; text-transform: uppercase; color: #E8C361; margin-bottom: 6px;">
+            Results &amp; Verification
+          </div>
+          <div style="font-size: 20px; font-weight: 800; color: #ffffff; margin-bottom: 12px;">
+            Latest Verified Trades
+          </div>
+          <div style="background: #080808; border: 1px solid rgba(255,255,255,0.15); border-radius: 16px; padding: 16px; display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <span style="font-size: 12px; font-weight: 700; color: #E8C361; letter-spacing: 0.15em;">LIVE MT5 STATEMENT</span>
+              <span style="font-size: 11px; font-weight: 800; background: rgba(16,185,129,0.2); color: #10B981; border: 1px solid rgba(16,185,129,0.3); border-radius: 9999px; padding: 3px 8px;">+£228,624.29</span>
+            </div>
+            <div style="font-size: 15px; font-weight: 700; color: #ffffff;">Live MT5 Code, Short Execution</div>
+            <div style="font-size: 12px; color: #a1a1aa; line-height: 1.4;">Stacked intraday sell positions capturing the 127-pip drop on Gold.</div>
+          </div>
+        </div>
+
       </div>
     </div>
     <script type="module" src="/src/main.tsx"></script>

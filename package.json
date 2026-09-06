@@ -5,9 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm --prefix server install && tsc -b && vite build",
+    "build": "tsc -b && vite build",
     "start": "node server/index.js",
     "lint": "oxlint",
+    "test": "node tests/api_resilience.test.js && node tests/frontend_audit.test.js",
     "preview": "vite preview"
   },
   "dependencies": {
