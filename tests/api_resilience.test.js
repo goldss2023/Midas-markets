@@ -120,41 +120,7 @@ async function runTests() {
     event_type: 'click'
   }, 400);
 
-  // 13. Admin Fallback: GET /api/admin/stats
-  const stats = await testEndpoint('GET /api/admin/stats', '/api/admin/stats');
-  if (typeof stats?.totalReviews !== 'number') {
-    console.error('FAIL: admin stats missing totalReviews');
-    failures++;
-  } else {
-    console.log(`PASS: admin stats returned totalReviews: ${stats.totalReviews}`);
-  }
-
-  // 14. Admin Fallback: GET /api/admin/reviews
-  const adminReviews = await testEndpoint('GET /api/admin/reviews', '/api/admin/reviews');
-  if (!Array.isArray(adminReviews?.reviews)) {
-    console.error('FAIL: admin reviews missing reviews array');
-    failures++;
-  } else {
-    console.log(`PASS: admin reviews returned ${adminReviews.reviews.length} reviews`);
-  }
-
-  // 15. Admin Fallback: GET /api/admin/emails
-  const adminEmails = await testEndpoint('GET /api/admin/emails', '/api/admin/emails');
-  if (!Array.isArray(adminEmails?.emails)) {
-    console.error('FAIL: admin emails missing emails array');
-    failures++;
-  } else {
-    console.log(`PASS: admin emails returned array successfully`);
-  }
-
-  // 16. Admin Fallback: GET /api/admin/suggestions
-  const adminSuggestions = await testEndpoint('GET /api/admin/suggestions', '/api/admin/suggestions');
-  if (!Array.isArray(adminSuggestions?.suggestions)) {
-    console.error('FAIL: admin suggestions missing suggestions array');
-    failures++;
-  } else {
-    console.log(`PASS: admin suggestions returned array successfully`);
-  }
+  // Admin routes are covered by tests/admin_security.test.js.
 
   // 17. Malformed JSON Body resilience (must not produce 500 error)
   try {
@@ -174,41 +140,7 @@ async function runTests() {
     failures++;
   }
 
-  // 18. Admin Analytics Summary (used on Admin mount)
-  const analyticsSummary = await testEndpoint('GET /api/admin/analytics/summary', '/api/admin/analytics/summary');
-  if (!Array.isArray(analyticsSummary?.summary)) {
-    console.error('FAIL: admin analytics summary missing summary array');
-    failures++;
-  } else {
-    console.log(`PASS: admin analytics summary returned array successfully`);
-  }
-
-  // 19. Admin Emails Count
-  const emailsCount = await testEndpoint('GET /api/admin/emails/count', '/api/admin/emails/count');
-  if (typeof emailsCount?.count !== 'number') {
-    console.error('FAIL: admin emails count missing count number');
-    failures++;
-  } else {
-    console.log(`PASS: admin emails count returned: ${emailsCount.count}`);
-  }
-
-  // 20. Admin Mutations: Review Status, Respond, Delete
-  await testEndpoint('PUT /api/admin/reviews/1/status', '/api/admin/reviews/1/status', 'PUT', { status: 'approved' });
-  await testEndpoint('PUT /api/admin/reviews/1/respond', '/api/admin/reviews/1/respond', 'PUT', { response: 'Great work!' });
-  await testEndpoint('DELETE /api/admin/reviews/1', '/api/admin/reviews/1', 'DELETE');
-
-  // 21. Admin Mutations: Suggestion Delete
-  await testEndpoint('DELETE /api/admin/suggestions/1', '/api/admin/suggestions/1', 'DELETE');
-
-  // 22. Admin Mutations: FAQ Create & Delete
-  await testEndpoint('POST /api/admin/faqs', '/api/admin/faqs', 'POST', { question: 'New FAQ', answer: 'New Answer' });
-  await testEndpoint('DELETE /api/admin/faqs/1', '/api/admin/faqs/1', 'DELETE');
-
-  // 23. Admin Mutations: Settings Update
-  await testEndpoint('POST /api/admin/settings', '/api/admin/settings', 'POST', { key: 'test_key', value: 'test_value' });
-
-  // 24. Admin Mutations: Proof Delete
-  await testEndpoint('DELETE /api/admin/proofs/1', '/api/admin/proofs/1', 'DELETE');
+  // Admin mutation and analytics authorization are covered by tests/admin_security.test.js.
 
   // 25. Catch-all 404 JSON for unknown /api/* endpoint
   try {

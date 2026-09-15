@@ -5,6 +5,13 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import multer from 'multer';
 import { createClient } from '@supabase/supabase-js';
+import {
+  ADMIN_COOKIE,
+  clearAdminCookie,
+  createAdminGuard,
+  getConfiguredAdminEmails,
+  setAdminCookie,
+} from './admin-auth.js';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -168,15 +175,64 @@ if (supabaseUrl && supabaseKey) {
   console.warn("Notice: SUPABASE_URL and SUPABASE_ANON_KEY not set. Running with built-in resilient static fallbacks.");
 }
 
-// Multer setup - using memory storage
+// Multer setup - memory storage with strict upload limits and MIME allowlist
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024, files: 1 },
+  fileFilter: (_req, file, callback) => {
+    const allowedTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+    if (!allowedTypes.has(file.mimetype)) {
+      return callback(new Error('Only JPEG, PNG, and WebP images are allowed'));
+    }
+    callback(null, true);
+  },
+});
+
+const adminEmails = getConfiguredAdminEmails();
+const requireAdmin = createAdminGuard({ supabase, adminEmails });
+const publicOrigins = new Set([
+  process.env.PUBLIC_SITE_ORIGIN || 'https://midasmarkets.vercel.app',
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+]);
 
 // ---------------------------------------------------------------------------
 // Middleware
 // ---------------------------------------------------------------------------
-app.use(cors());
-app.use(express.json());
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+  res.setHeader(
+    'Content-Security-Policy',
+    "default-src 'self'; base-uri 'self'; frame-ancestors 'none'; object-src 'none'; " +
+      "img-src 'self' data: blob: https://*.supabase.co; media-src 'self' https://*.supabase.co; " +
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; " +
+      "script-src 'self'; connect-src 'self' https://*.supabase.co; form-action 'self'"
+  );
+  next();
+});
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || publicOrigins.has(origin)) return callback(null, true);
+    return callback(new Error('Origin not allowed by CORS'));
+  },
+  credentials: true,
+}));
+app.use(express.json({ limit: '32kb' }));
+
+function noStore(_req, res, next) {
+  res.setHeader('Cache-Control', 'no-store');
+  next();
+}
+
+function adminRouteGuard(req, res, next) {
+  noStore(req, res, () => requireAdmin(req, res, next));
+}
+
 
 // ---------------------------------------------------------------------------
 // Validation helpers
@@ -329,7 +385,48 @@ app.post('/api/analytics/track', async (req, res) => {
 });
 
 // ===========================================================================
-//  ADMIN ENDPOINTS (Safe with fallback responses)
+//  ADMIN AUTHENTICATION
+// ===========================================================================
+
+app.post('/api/admin/auth/login', async (req, res) => {
+  const email = typeof req.body?.email === 'string' ? req.body.email.trim().toLowerCase() : '';
+  const password = typeof req.body?.password === 'string' ? req.body.password : '';
+  if (!isValidEmail(email) || password.length < 8 || password.length > 256) {
+    return res.status(400).json({ error: 'Valid email and password are required' });
+  }
+  if (!supabase) return res.status(503).json({ error: 'Admin authentication is not configured' });
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error || !data?.session?.access_token || !data.user?.email) {
+    return res.status(401).json({ error: 'Invalid login details' });
+  }
+  if (!adminEmails.has(data.user.email.trim().toLowerCase())) {
+    await supabase.auth.signOut();
+    return res.status(403).json({ error: 'Admin access required' });
+  }
+
+  setAdminCookie(res, data.session.access_token);
+  return res.json({ user: { id: data.user.id, email: data.user.email } });
+});
+
+app.post('/api/admin/auth/logout', (_req, res) => {
+  clearAdminCookie(res);
+  return res.status(204).end();
+});
+
+app.get('/api/admin/auth/me', adminRouteGuard, (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  return res.json({ user: req.adminUser });
+});
+
+// Every remaining admin endpoint is protected before its handler runs.
+app.use('/api/admin', adminRouteGuard, (_req, res, next) => {
+  if (!supabase) return res.status(503).json({ error: 'Admin database is not configured' });
+  next();
+});
+
+// ===========================================================================
+//  ADMIN ENDPOINTS (Authenticated; no private fallback data)
 // ===========================================================================
 
 app.get('/api/admin/reviews', async (_req, res) => {

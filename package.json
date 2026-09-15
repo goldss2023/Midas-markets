@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "start": "node server/index.js",
     "lint": "oxlint",
-    "test": "node tests/api_resilience.test.js && node tests/frontend_audit.test.js",
+    "test": "node tests/api_resilience.test.js && node tests/admin_security.test.js && node tests/frontend_audit.test.js",
     "preview": "vite preview"
   },
   "dependencies": {

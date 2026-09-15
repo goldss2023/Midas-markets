@@ -7,6 +7,10 @@ const API = '/api';
 function Admin() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
+  const [authenticated, setAuthenticated] = useState<boolean | null>(null);
+  const [loginEmail, setLoginEmail] = useState('');
+  const [loginPassword, setLoginPassword] = useState('');
+  const [loginError, setLoginError] = useState('');
   const [activeTab, setActiveTab] = useState<'reviews'|'proofs'|'faqs'|'settings'|'suggestions'|'emails'|'analytics'>('reviews');
 
   // Data States
@@ -35,14 +39,41 @@ function Admin() {
   const [faqQ, setFaqQ] = useState('');
   const [faqA, setFaqA] = useState('');
 
+  const adminFetch = (input: RequestInfo | URL, init: RequestInit = {}) =>
+    fetch(input, { ...init, credentials: 'include' });
+
+  const login = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoginError('');
+    const response = await adminFetch(`${API}/admin/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: loginEmail, password: loginPassword }),
+    });
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      setLoginError(data.error || 'Login failed');
+      return;
+    }
+    setAuthenticated(true);
+    setLoginPassword('');
+    fetchData();
+  };
+
   const fetchData = async () => {
     try {
+      const sessionRes = await adminFetch(`${API}/admin/auth/me`);
+      if (!sessionRes.ok) {
+        setAuthenticated(false);
+        return;
+      }
+      setAuthenticated(true);
       const [revRes, sugRes, emailRes, statsRes, analyticsRes, proofsRes, faqsRes, settingsRes] = await Promise.all([
-        fetch(`${API}/admin/reviews`),
-        fetch(`${API}/admin/suggestions`),
-        fetch(`${API}/admin/emails`),
-        fetch(`${API}/admin/stats`),
-        fetch(`${API}/admin/analytics/summary`),
+        adminFetch(`${API}/admin/reviews`),
+        adminFetch(`${API}/admin/suggestions`),
+        adminFetch(`${API}/admin/emails`),
+        adminFetch(`${API}/admin/stats`),
+        adminFetch(`${API}/admin/analytics/summary`),
         fetch(`${API}/proofs`),
         fetch(`${API}/faqs`),
         fetch(`${API}/settings`)
@@ -73,25 +104,25 @@ function Admin() {
   // ─── Actions ───
 
   const updateStatus = async (id: string, status: string) => {
-    await fetch(`${API}/admin/reviews/${id}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) });
+    await adminFetch(`${API}/admin/reviews/${id}/status`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ status }) });
     fetchData();
   };
 
   const addReply = async (id: string) => {
     if (!replyText[id]?.trim()) return;
-    await fetch(`${API}/admin/reviews/${id}/respond`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ response: replyText[id] }) });
+    await adminFetch(`${API}/admin/reviews/${id}/respond`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ response: replyText[id] }) });
     setReplyText({ ...replyText, [id]: '' });
     fetchData();
   };
 
   const deleteReview = async (id: string) => {
     if (!confirm('Delete this review?')) return;
-    await fetch(`${API}/admin/reviews/${id}`, { method: 'DELETE' });
+    await adminFetch(`${API}/admin/reviews/${id}`, { method: 'DELETE' });
     fetchData();
   };
 
   const deleteSuggestion = async (id: string) => {
-    await fetch(`${API}/admin/suggestions/${id}`, { method: 'DELETE' });
+    await adminFetch(`${API}/admin/suggestions/${id}`, { method: 'DELETE' });
     fetchData();
   };
 
@@ -108,7 +139,7 @@ function Admin() {
     formData.append('is_red', proofIsRed.toString());
 
     try {
-      await fetch(`${API}/admin/proofs`, { method: 'POST', body: formData });
+      await adminFetch(`${API}/admin/proofs`, { method: 'POST', body: formData });
       setProofFile(null); setProofTitle(''); setProofSubtitle(''); setProofDetails(''); setProofBadge(''); setProofIsRed(false);
       fetchData();
     } catch { alert('Upload failed'); }
@@ -117,31 +148,46 @@ function Admin() {
 
   const deleteProof = async (id: string) => {
     if (!confirm('Delete this proof?')) return;
-    await fetch(`${API}/admin/proofs/${id}`, { method: 'DELETE' });
+    await adminFetch(`${API}/admin/proofs/${id}`, { method: 'DELETE' });
     fetchData();
   };
 
   const addFaq = async (e: React.FormEvent) => {
     e.preventDefault();
-    await fetch(`${API}/admin/faqs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: faqQ, answer: faqA }) });
+    await adminFetch(`${API}/admin/faqs`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ question: faqQ, answer: faqA }) });
     setFaqQ(''); setFaqA('');
     fetchData();
   };
 
   const deleteFaq = async (id: string) => {
     if (!confirm('Delete FAQ?')) return;
-    await fetch(`${API}/admin/faqs/${id}`, { method: 'DELETE' });
+    await adminFetch(`${API}/admin/faqs/${id}`, { method: 'DELETE' });
     fetchData();
   };
 
   const updateSetting = async (key: string, value: string) => {
-    await fetch(`${API}/admin/settings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key, value }) });
+    await adminFetch(`${API}/admin/settings`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ key, value }) });
     setSettings({ ...settings, [key]: value });
   };
 
   if (loading) return (
     <div className="min-h-screen bg-[#050505] flex items-center justify-center">
       <div className="w-12 h-12 border-2 border-[#d4af37] border-t-transparent rounded-full animate-spin"></div>
+    </div>
+  );
+
+  if (authenticated === false) return (
+    <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center px-4">
+      <form onSubmit={login} className="w-full max-w-md bg-[#0a0a0a] border border-white/10 rounded-2xl p-6 shadow-2xl">
+        <h1 className="text-2xl font-bold font-playfair text-[#d4af37] mb-2">Midas Admin</h1>
+        <p className="text-white/60 text-sm mb-6">Sign in with the approved admin account.</p>
+        <label className="block text-sm text-white/70 mb-2" htmlFor="admin-email">Email</label>
+        <input id="admin-email" type="email" required autoComplete="username" value={loginEmail} onChange={e => setLoginEmail(e.target.value)} className="w-full bg-black border border-white/10 rounded p-3 mb-4 text-white" />
+        <label className="block text-sm text-white/70 mb-2" htmlFor="admin-password">Password</label>
+        <input id="admin-password" type="password" required minLength={8} autoComplete="current-password" value={loginPassword} onChange={e => setLoginPassword(e.target.value)} className="w-full bg-black border border-white/10 rounded p-3 mb-4 text-white" />
+        {loginError && <p role="alert" className="text-red-400 text-sm mb-4">{loginError}</p>}
+        <button type="submit" className="w-full bg-[#d4af37] text-black font-bold py-3 rounded hover:bg-[#f9e7b9]">Sign in</button>
+      </form>
     </div>
   );
 
