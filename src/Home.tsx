@@ -29,7 +29,7 @@ const DEFAULT_PROOFS = [
     filename: "photo_5942833990374985878_y.jpg",
     title: "Live MT5 Code, Short Execution",
     subtitle: "Stacked intraday sell positions capturing the 127-pip drop.",
-    badge: "+£228,624.29",
+    badge: "Statement screenshot",
     isRed: false,
     details: "High-conviction institutional sell setup on XAUUSD. Price swept liquidity at 4156.31, confirmed structural shift on lower timeframe, and distributed cleanly with 1:4.8 RR."
   },
@@ -37,7 +37,7 @@ const DEFAULT_PROOFS = [
     filename: "photo_5940582190561300192_y.jpg",
     title: "XAUUSD Supply Rejection Sell",
     subtitle: "Precision entries straight off 4H institutional ceiling.",
-    badge: "+£50,439.27",
+    badge: "Statement screenshot",
     isRed: false,
     details: "Price wicked the key liquidity ceiling and reversed sharply with zero drawdown. All 9 partial positions delivered clean target profit."
   },
@@ -45,7 +45,7 @@ const DEFAULT_PROOFS = [
     filename: "photo_5906974350642974415_y.jpg",
     title: "London Session Gold Breakout",
     subtitle: "Asian session sweep followed by aggressive bullish impulse.",
-    badge: "+£48,839.68",
+    badge: "Trade record",
     isRed: false,
     details: "Asian session lows were liquidated before the London open. A textbook bullish order block formed on the 5m timeframe, pushing directly into our primary target."
   },
@@ -53,17 +53,17 @@ const DEFAULT_PROOFS = [
     filename: "photo_5897478787836874156_y.jpg",
     title: "XAUUSD Swing Sell Continuation",
     subtitle: "Overnight swing positions locked with trailing stops.",
-    badge: "+£31,254.96",
+    badge: "Trade record",
     isRed: false,
-    details: "Macro structural break on Gold. Trailed stop loss secured over +£31,200 in clean banked profit across the London/NY overlap."
+    details: "Macro structural break on Gold. Trailing stops were used across the London/NY overlap; review the chart and execution record for the full context."
   },
   {
     filename: "photo_5933755099526141353_y.jpg",
     title: "Intraday Momentum Scalp",
     subtitle: "Clean 5-minute continuation off fair value gap.",
-    badge: "+£5,731.75",
+    badge: "Trade record",
     isRed: false,
-    details: "Low-drawdown scalp executed during high-volume New York hours, locking in +£5,731 with disciplined execution."
+    details: "Low-drawdown scalp executed during high-volume New York hours, with the entry, invalidation, and outcome available to review.",
   },
   {
     filename: "photo_5942833990374985752_y.jpg",
@@ -1467,13 +1467,13 @@ function Home() {
 
           {/* Bold, high-contrast text separated by large editorial gap */}
           <p className="mt-4 sm:mt-20 md:mt-28 text-[15px] sm:text-[21px] leading-[1.5] sm:leading-[1.65] text-white max-w-[720px] font-outfit font-semibold">
-            We trade 20 forex pairs including gold. Clean analysis. Elite risk-to-reward. <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF4CC] via-[#E8C361] to-[#BA902C] font-bold font-outfit">4 weeks straight without a stop loss.</span>
+            We trade 20 forex pairs including gold. Clean analysis, defined risk, and clear trade plans built for real market conditions.
           </p>
 
           <p className="mt-4 sm:mt-6 text-[15px] sm:text-[17px] leading-[1.75] text-zinc-100 max-w-[680px] font-outfit font-medium hidden sm:block">
-            Midas Markets is a live trading operation you get to watch in real time. Every day we post full chart breakdowns, show exactly why we enter, and share verified proof. No guessing. No recycled ideas. Just clean trades that print.
+            Midas Markets is a live trading operation you get to watch in real time. Every day we post full chart breakdowns, show exactly why we enter, and share trade records for review. No guessing. No recycled ideas. Just a clear process you can inspect.
             <br/><br/>
-            <strong className="text-white font-bold">Do we occasionally hit stop loss? Yes.</strong> Every real trader does. But we always recover &mdash; tighter, faster, and more precise than before. That is the journey.
+            <strong className="text-white font-bold">Losses are part of trading.</strong> We share the setup, invalidation level, and outcome so you can judge the process for yourself.
           </p>
 
           {/* Desktop CTA Row */}
@@ -1486,7 +1486,7 @@ function Home() {
                 View Official Socials
               </button>
             </div>
-            <span className="text-[12px] sm:text-[13px] text-zinc-300 font-semibold tracking-[0.03em] mt-1 font-outfit">4 weeks. 20 pairs. Zero stop losses hit. Come see why.</span>
+            <span className="text-[12px] sm:text-[13px] text-zinc-300 font-semibold tracking-[0.03em] mt-1 font-outfit">20 pairs. Clear entries. Defined stop losses. Follow along live.</span>
           </div>
           
           {/* Mobile CTA */}
@@ -1498,6 +1498,10 @@ function Home() {
                 Official Social Media Hub
              </button>
           </div>
+
+          <p className="mt-4 text-[11px] sm:text-[12px] leading-relaxed text-zinc-400 max-w-[680px] font-outfit">
+            <strong className="text-zinc-200">Risk warning:</strong> Forex and leveraged products can lose money. Past results do not guarantee future results. Use a demo or risk only money you can afford to lose.
+          </p>
 
           {/* Mobile Compact Stats Bar */}
           <div className="mt-4 flex md:hidden justify-between items-center w-full bg-black/60 border border-white/10 rounded-xl p-3 backdrop-blur-md">
@@ -1544,7 +1548,7 @@ function Home() {
         <div className="w-full flex flex-col items-center justify-center my-6 sm:my-32 md:my-48 relative">
           <div className="w-full max-w-[840px] h-[1px] bg-gradient-to-r from-transparent via-[#E8C361]/40 to-transparent" />
           <div className="absolute bg-[#050505] px-6 sm:px-8 py-2 sm:py-2.5 rounded-full border border-[#E8C361]/40 text-[11px] sm:text-[12px] font-cinzel font-bold text-[#E8C361] tracking-[0.28em] uppercase shadow-[0_0_30px_rgba(232,195,97,0.22)] flex items-center gap-2">
-            <span>Verified Execution Records</span>
+            <span>Trade Execution Records</span>
           </div>
         </div>
 
@@ -1557,7 +1561,7 @@ function Home() {
                 Results &amp; Verification
               </span>
               <h2 className="font-playfair text-[30px] sm:text-[44px] font-black text-white m-0 tracking-tight">
-                Latest Verified Trades
+                Latest Trade Records
               </h2>
             </div>
             <div className="flex items-center gap-3">
@@ -1657,7 +1661,7 @@ function Home() {
                           {/* Banked Profit Display */}
                           <div className="mt-3 mb-2">
                             <div className="text-[11px] uppercase tracking-[0.22em] font-cinzel font-semibold text-zinc-300">
-                              Verified Banked Profit
+                              Result shown in statement
                             </div>
                             <div className="font-cinzel text-[32px] sm:text-[42px] lg:text-[46px] font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#FFFBF0] via-[#E8C361] to-[#A37B1E] drop-shadow-[0_2px_15px_rgba(232,195,97,0.45)] leading-tight mt-1">
                               {proof.badge}
@@ -1778,7 +1782,7 @@ function Home() {
                     onClick={() => setAllProofsModalOpen(true)}
                     className="bg-gradient-to-r from-[#FFF2BD] via-[#E8C361] to-[#AA8222] text-black font-cinzel font-extrabold text-sm sm:text-base px-8 sm:px-12 py-4 rounded-full shadow-[0_0_35px_rgba(232,195,97,0.4)] hover:scale-105 transition-all btn-sheen flex items-center gap-2.5"
                   >
-                    View All Results &amp; Verified Trades (10 Setups) <ArrowRight className="w-5 h-5" />
+                    View All Results &amp; Trade Records (10 Setups) <ArrowRight className="w-5 h-5" />
                   </button>
                 </div>
               </div>
@@ -1790,9 +1794,9 @@ function Home() {
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6 px-1">
             <div className="flex items-center gap-2 sm:gap-3 overflow-x-auto max-w-full pb-2 sm:pb-0 hide-scrollbar">
               {[
-                { label: "01 · +£228k", sub: "Live MT5 Short" },
-                { label: "02 · +£50k", sub: "Supply Sell" },
-                { label: "03 · +£48k", sub: "London Impulse" },
+                { label: "01 · MT5 record", sub: "Live MT5 Short" },
+                { label: "02 · Trade record", sub: "Supply Sell" },
+                { label: "03 · Trade record", sub: "London Impulse" },
                 { label: "04 · View All (10)", sub: "Vault" },
               ].map((tab, idx) => (
                 <button
@@ -1819,9 +1823,9 @@ function Home() {
         {/* Mobile Trading Philosophy & Recovery Card (Shown right below verified execution records) */}
         <div className="w-full max-w-[1200px] mt-6 sm:hidden p-5 bg-[#080808]/90 border border-white/10 rounded-2xl text-left">
           <p className="text-[13.5px] leading-[1.65] text-zinc-200 font-outfit">
-            Midas Markets is a live trading operation you get to watch in real time. Every day we post full chart breakdowns, show exactly why we enter, and share verified proof. No guessing. No recycled ideas. Just clean trades that print.
+            Midas Markets is a live trading operation you get to watch in real time. Every day we post full chart breakdowns, show exactly why we enter, and share trade records for review. No guessing. No recycled ideas. Just a clear process you can inspect.
             <br/><br/>
-            <strong className="text-white font-bold">Do we occasionally hit stop loss? Yes.</strong> Every real trader does. But we always recover &mdash; tighter, faster, and more precise than before. That is the journey.
+            <strong className="text-white font-bold">Losses are part of trading.</strong> We share the setup, invalidation level, and outcome so you can judge the process for yourself.
           </p>
         </div>
 
