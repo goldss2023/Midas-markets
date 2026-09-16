@@ -611,18 +611,7 @@ function Home() {
       return reviewsData;
     }, [reviewTab, reviewsData]);
 
-    // When user clicks "View All", shuffle so positive & mixed reviews are mixed together
-    const shuffledReviews = useMemo(() => {
-      if (!reviewsExpanded) return filteredReviews.slice(0, 12);
-      const arr = [...filteredReviews];
-      for (let i = arr.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [arr[i], arr[j]] = [arr[j], arr[i]];
-      }
-      return arr;
-    }, [filteredReviews, reviewsExpanded]);
-
-    const displayedReviews = shuffledReviews;
+    const displayedReviews = reviewsExpanded ? filteredReviews : filteredReviews.slice(0, 12);
 
   const submitReview = async (e: React.FormEvent) => {
     e.preventDefault();
